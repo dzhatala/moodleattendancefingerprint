@@ -1,2 +1,5 @@
-// 1. Sun Feb  6 17:24:17 KST 2022
-only 3C seen, where are 3A, 3B
+Sun Nov 13 21:48:22 KST 2022
+0. provide user a button (gui) for cancelling connection ...
+1. 
+
+

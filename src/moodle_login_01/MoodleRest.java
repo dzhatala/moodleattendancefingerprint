@@ -219,7 +219,7 @@ public class MoodleRest {
 					System.out.println("Getting Session info id:" + sess[k].id);
 					// todo multipleThread here ...
 
-					//finalizing variables for inner class
+					// finalizing variables for inner class
 					final Token tf = token;
 					final BasicNameValuePair nvf = nv;
 					final int kf = k;
@@ -237,7 +237,7 @@ public class MoodleRest {
 										rrf.response, SessionDetail.class);
 
 								sess[kf].detail = sessDetail;
-								//MoodleUser[] musers = sessDetail.users;
+								// MoodleUser[] musers = sessDetail.users;
 							} catch (Exception e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
@@ -403,9 +403,8 @@ public class MoodleRest {
 		restConnector.setPassword("007"); // TODO ask user input
 
 		Token t = restConnector.getToken(null, null, "fp_cepatpintar");
-		
+
 	}
-	
 
 	public static void main2(String[] args) throws Exception {
 		// MoodleRest restConnector=new MoodleRest(moodleURL);//parameter can't

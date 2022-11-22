@@ -12,9 +12,8 @@ import javax.swing.tree.TreeNode;
 import json.AttendanceInstance;
 import json.Course;
 
-public class CourseTreeNode extends DefaultMutableTreeNode  {
+public class CourseTreeNode extends DefaultMutableTreeNode {
 
-	
 	Hashtable table = new Hashtable();
 	Hashtable dates = new Hashtable();
 
@@ -24,8 +23,8 @@ public class CourseTreeNode extends DefaultMutableTreeNode  {
 	}
 
 	/**
-	 * if not exist add, if exist return
-	 * // TODO sort here
+	 * if not exist add, if exist return // TODO sort here
+	 * 
 	 * @param d
 	 * @return
 	 */
@@ -33,21 +32,21 @@ public class CourseTreeNode extends DefaultMutableTreeNode  {
 	TreeNode addDateRoot(Date d) {
 		DefaultMutableTreeNode ret = null;
 		if (d != null) {
-				ret=getDate(d);
+			ret = getDate(d);
 			if (ret == null) {
 				ret = new DefaultMutableTreeNode(d);
-				
-				//sorting by dates
-				Enumeration<DefaultMutableTreeNode> enums=dates.elements();
-				int index=0;
-				
-				while (enums.hasMoreElements()){
-					Date de=(Date) enums.nextElement().getUserObject();
-					if(d.compareTo(de)<0){
+
+				// sorting by dates
+				Enumeration<DefaultMutableTreeNode> enums = dates.elements();
+				int index = 0;
+
+				while (enums.hasMoreElements()) {
+					Date de = (Date) enums.nextElement().getUserObject();
+					if (d.compareTo(de) < 0) {
 						index++;
 					}
 				}
-				insert(ret,index);
+				insert(ret, index);
 				dates.put(d, ret);
 			}
 		}
@@ -109,7 +108,7 @@ public class CourseTreeNode extends DefaultMutableTreeNode  {
 
 	public DefaultMutableTreeNode getDate(Date d) {
 		// TODO Auto-generated method stub
-		return  (DefaultMutableTreeNode) dates.get(d);
+		return (DefaultMutableTreeNode) dates.get(d);
 	}
 
 }

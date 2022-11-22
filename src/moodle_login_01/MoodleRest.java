@@ -37,6 +37,9 @@ public class MoodleRest {
 	String moodleURL = "http://127.0.0.1/moodle";
 	String moodleUsername = null;
 	long currentUserId = -1; // cache userId from last invocation
+	private String moodlePassword;
+	private Token lastToken = null;
+	String service;
 
 	RequestConfig requestConfig = RequestConfig.custom()
 			.setConnectionRequestTimeout(2000).setConnectTimeout(2000)
@@ -89,9 +92,6 @@ public class MoodleRest {
 		return moodlePassword;
 	}
 
-	private String moodlePassword;
-	private Token lastToken = null;
-	String service;
 
 	public MoodleRest(String murl) {
 		moodleURL = murl;
@@ -159,8 +159,13 @@ public class MoodleRest {
 		if (service == null) {
 			throw new Exception("must identify service");
 		}
-		Token token = getToken(moodleUsername, moodlePassword, service);
+		getToken(moodleUsername, moodlePassword, service);
 		// System.out.println("usertoken:"+token.getToken()); System.exit(-1);
+		Token t = null;
+		if(lastToken!=null)t=lastToken;
+		return get_date_courses(format, t,javaEpochLongTS);
+	}
+	public Course[] get_date_courses(String format, Token token, String javaEpochLongTS) throws Exception {
 		BasicNameValuePair nv1 = new BasicNameValuePair("field", "username");
 		BasicNameValuePair nv2 = new BasicNameValuePair("values[0]",
 				moodleUsername);
@@ -388,12 +393,7 @@ public class MoodleRest {
 
 	}
 
-	public static void main(String[] args) throws ProtocolException,
-			IOException {
-		testTokenCP();
-
-	}
-
+	
 	public static void testTokenCP() throws ProtocolException, IOException {
 
 		String url = "https://cs.cepatpintar.biz.id/moodle";
@@ -409,7 +409,8 @@ public class MoodleRest {
 	public static void main2(String[] args) throws Exception {
 		// MoodleRest restConnector=new MoodleRest(moodleURL);//parameter can't
 		// be initialized before constructor ?
-		MoodleRest restConnector = new MoodleRest("http://127.0.0.1/moodle");
+		//MoodleRest restConnector = new MoodleRest("http://127.0.0.1/moodle");
+		MoodleRest restConnector = new MoodleRest("https://cs.cepatpintar.biz.id/moodle");
 		// restConnector.setMoodleURL(moodleURL.getText());
 		restConnector.setUsername("007");// TODO ask user input
 		restConnector.setPassword("007"); // TODO ask user input
@@ -419,10 +420,17 @@ public class MoodleRest {
 				"dd/MM/yyyy HH:mm:ss");
 
 		String javaEpochLongTS = dateFormat.parse(d).getTime() + "";
+		restConnector.setService("fp_cepatpintar");
 		restConnector.get_date_courses(javaEpochLongTS);
 		// restConnector.updateUserStatus(50, "609", "220", "17",
 		// "17,19,20,18");
 
 	}
+
+	public static void main(String[] args) throws Exception {
+		main2(args);
+		//testTokenCP();
+
+}
 
 }

@@ -39,8 +39,8 @@ public class MoodleRest {
 	long currentUserId = -1; // cache userId from last invocation
 
 	RequestConfig requestConfig = RequestConfig.custom()
-			.setConnectionRequestTimeout(1000).setConnectTimeout(1000)
-			.setSocketTimeout(1000)
+			.setConnectionRequestTimeout(2000).setConnectTimeout(2000)
+			.setSocketTimeout(2000)
 
 			.build();
 

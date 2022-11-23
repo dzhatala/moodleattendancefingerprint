@@ -11,7 +11,14 @@ public class Utils {
 	static SimpleDateFormat df = new SimpleDateFormat(
 			"dd/MM/yyyy HH:mm:ss");
 
-	
+	/**
+	 * return timestamps in mili seconds for the beginning and end of the day
+	 * ret[0] is beginning of ts, ret[1] is end of ts
+	 * @param anydate
+	 * @param begin_day
+	 * @param end_day
+	 * @return
+	 */
 	public static long[] TSDateStartEnd(Date anydate, int begin_day,
 			int end_day) {
 		long[] ret = new long[] { anydate.getTime() / 1000,

@@ -92,7 +92,6 @@ public class MoodleRest {
 		return moodlePassword;
 	}
 
-
 	public MoodleRest(String murl) {
 		moodleURL = murl;
 	}
@@ -162,10 +161,13 @@ public class MoodleRest {
 		getToken(moodleUsername, moodlePassword, service);
 		// System.out.println("usertoken:"+token.getToken()); System.exit(-1);
 		Token t = null;
-		if(lastToken!=null)t=lastToken;
-		return get_date_courses(format, t,javaEpochLongTS);
+		if (lastToken != null)
+			t = lastToken;
+		return get_date_courses(format, t, javaEpochLongTS);
 	}
-	public Course[] get_date_courses(String format, Token token, String javaEpochLongTS) throws Exception {
+
+	public Course[] get_date_courses(String format, Token token,
+			String javaEpochLongTS) throws Exception {
 		BasicNameValuePair nv1 = new BasicNameValuePair("field", "username");
 		BasicNameValuePair nv2 = new BasicNameValuePair("values[0]",
 				moodleUsername);
@@ -393,7 +395,6 @@ public class MoodleRest {
 
 	}
 
-	
 	public static void testTokenCP() throws ProtocolException, IOException {
 
 		String url = "https://cs.cepatpintar.biz.id/moodle";
@@ -409,8 +410,9 @@ public class MoodleRest {
 	public static void main2(String[] args) throws Exception {
 		// MoodleRest restConnector=new MoodleRest(moodleURL);//parameter can't
 		// be initialized before constructor ?
-		//MoodleRest restConnector = new MoodleRest("http://127.0.0.1/moodle");
-		MoodleRest restConnector = new MoodleRest("https://cs.cepatpintar.biz.id/moodle");
+		// MoodleRest restConnector = new MoodleRest("http://127.0.0.1/moodle");
+		MoodleRest restConnector = new MoodleRest(
+				"https://cs.cepatpintar.biz.id/moodle");
 		// restConnector.setMoodleURL(moodleURL.getText());
 		restConnector.setUsername("007");// TODO ask user input
 		restConnector.setPassword("007"); // TODO ask user input
@@ -429,8 +431,126 @@ public class MoodleRest {
 
 	public static void main(String[] args) throws Exception {
 		main2(args);
-		//testTokenCP();
+		// testTokenCP();
 
-}
+	}
+
+	public SessionDetail asynchGetSessionDetail(int sessionId) throws Exception {
+		// TODO Auto-generated method stub
+		System.out.println("RC: asynchGS sessid=" + sessionId);
+		throw new Exception("not implemented");
+		// return null;
+	}
+
+	/***
+	 * asynchronous version of REST
+	 * 
+	 * @param moodleURL
+	 * @param wstoken
+	 * @param wsfunction
+	 * @param parameters
+	 * @param req_Format
+	 * @return
+	 * @throws Exception
+	 */
+	public RestReturn asynchREST(String moodleURL, String wstoken,
+			String wsfunction, NameValuePair[] parameters, String req_Format)
+			throws Exception {
+
+		System.out.println("REST: " + moodleURL + " " + wstoken + " "
+				+ wsfunction);
+
+		String responseBody = null;
+
+		String serverurl = moodleURL + "/webservice/rest/server.php" + "";
+		System.out.println("REST wsfunction : " + wsfunction);
+		System.out.println("REST url : " + serverurl);
+		// System.out.println("REST url : " + serverurl);
+
+		HttpPost post = new HttpPost(serverurl);
+
+		List<NameValuePair> params = new ArrayList<NameValuePair>();
+		params.add(new BasicNameValuePair("wstoken", wstoken));
+		// params.add(new BasicNameValuePair("service", service)); // extra
+		// parameter failed, token is already contain info for service
+		params.add(new BasicNameValuePair("wsfunction", wsfunction));
+
+		String format = "json";
+		if (req_Format != null)
+			format = req_Format;
+		params.add(new BasicNameValuePair("moodlewsrestformat", format));
+
+		for (int i = 0; i < parameters.length; i++) {
+			System.out.println("nv adding to post:" + parameters[i]);
+			;
+			params.add(parameters[i]);
+		}
+		post.setEntity(new UrlEncodedFormEntity(params));
+		RestReturn myret = null;
+		// CloseableHttpClient httpclient = HttpClients.createDefault();
+		CloseableHttpClient httpclient = this.defaultHTTPClient();
+		try {
+
+			CloseableHttpResponse response = httpclient.execute(post);
+			HttpEntity entity = response.getEntity();
+			myret = new RestReturn();
+			myret.response = EntityUtils.toString(entity, "UTF-8");
+			System.out.println(myret.response);
+			response.close();
+
+			return myret;
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			post.releaseConnection();
+		}
+
+		if (myret != null) {
+			if (myret.response.toLowerCase().indexOf("error") >= 0)
+				throw new Exception("JSON REPLY contain ERROR");
+		}
+
+		return null;
+
+	}
+
+	public SessionDetail getSessionDetail(final Session sess) {
+		// TODO Auto-generated method stub
+		final Token tf = this.lastToken;
+		BasicNameValuePair nv = new BasicNameValuePair("sessionid", sess.id
+				+ "");
+		System.out.println("Getting Session info id:" + sess.id);
+		final BasicNameValuePair nvf = nv;
+		final Gson gson = new Gson();
+
+		Runnable r = new Runnable() {
+
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				RestReturn rrf = null;
+				try {
+					rrf = REST(moodleURL, tf.getToken(),
+							"mod_wsattendance_get_session",
+							new BasicNameValuePair[] { nvf }, null);
+					SessionDetail sessDetail = gson.fromJson(rrf.response,
+							SessionDetail.class);
+
+					sess.detail = sessDetail;
+					// MoodleUser[] musers = sessDetail.users;
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+
+		};
+
+		// Thread t = new Thread(r);
+		// t.start();
+		r.run();
+		return sess.detail;
+	}
 
 }

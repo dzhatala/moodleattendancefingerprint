@@ -23,10 +23,13 @@ import javax.swing.tree.TreePath;
 import com.borland.dx.sql.dataset.Database;
 import com.borland.dx.sql.dataset.ConnectionDescriptor;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
@@ -204,18 +207,98 @@ public class Launcher extends JFrame {
 		// TODO Auto-generated method stub
 
 		TreePath tp = courseTree.getPathForLocation(me.getX(), me.getY());
+		Object obj = null;
+		DefaultMutableTreeNode node = null;
 		if (tp != null) {
 
 			System.out.println(tp.getLastPathComponent().getClass());
-			DefaultMutableTreeNode node = (DefaultMutableTreeNode) tp
-					.getLastPathComponent();
-			Object obj = node.getUserObject();
-			if (obj instanceof Session) {
-				showSession(node);
+			node = (DefaultMutableTreeNode) tp.getLastPathComponent();
+			obj = node.getUserObject();
+		} else {
+			System.out.println("no tree path ");
+			return; //
+		}
+		int btnNumber = me.getButton();
+		final int RIGHT_CLICK_EVENT = MouseEvent.BUTTON3;
+		switch (btnNumber) {
+		case MouseEvent.BUTTON1:
+
+			if (node != null && obj != null && obj instanceof Session) {
+				Session sess = (Session) node.getUserObject();
+				if (sess.detail != null) {
+					showSession(node);
+				}
 			}
 			// System.out.println(node.getUserObject().getClass());
-		} else
-			System.out.println("no tree path ");
+			break;
+		case RIGHT_CLICK_EVENT:
+			System.out.println("Right click");
+			showPopUpMenu(me, tp, node, obj);
+			break;
+		default:
+			break;
+
+		}
+	}
+
+	private void showPopUpMenu(MouseEvent me, TreePath tp,
+			final DefaultMutableTreeNode node, final Object obj) {
+		// TODO Auto-generated method stub
+		if (obj != null && obj instanceof Session) {
+
+			JPopupMenu popup = new JPopupMenu();
+			ActionListener menuListener = new ActionListener() {
+				public void actionPerformed(ActionEvent event) {
+					// System.out.println("Popup menu item ["
+					// + event.getActionCommand() + "] was pressed.");
+					String ac = event.getActionCommand();
+					if (ac.equalsIgnoreCase("Reload Session")) {
+						reloadSession(node, (Session) obj);
+					}
+				}
+			};
+			JMenuItem item;
+//			popup.add(item = new JMenuItem("Reload Session", new ImageIcon(
+//					"1.gif")));
+			popup.add(item = new JMenuItem("Reload Session"));
+			item.setHorizontalTextPosition(JMenuItem.RIGHT);
+			item.addActionListener(menuListener);
+			/*
+			 * popup.add(item = new JMenuItem("Center", new
+			 * ImageIcon("2.gif")));
+			 * item.setHorizontalTextPosition(JMenuItem.RIGHT);
+			 * item.addActionListener(menuListener); popup.add(item = new
+			 * JMenuItem("Right", new ImageIcon("3.gif")));
+			 * item.setHorizontalTextPosition(JMenuItem.RIGHT);
+			 * item.addActionListener(menuListener); popup.add(item = new
+			 * JMenuItem("Full", new ImageIcon("4.gif")));
+			 * item.setHorizontalTextPosition(JMenuItem.RIGHT);
+			 * item.addActionListener(menuListener); popup.addSeparator();
+			 * popup.add(item = new JMenuItem("Settings . . ."));
+			 * item.addActionListener(menuListener);
+			 */
+
+			popup.setLabel("Justification");
+			// popup.setBorder(new BevelBorder(BevelBorder.RAISED));
+			// popup.addPopupMenuListener(new PopupPrintListener());
+			popup.show(this, me.getX(), me.getY());
+
+		}
+
+	}
+
+	/**
+	 * reload session
+	 * 
+	 * @param node
+	 * @param obj
+	 */
+	protected void reloadSession(DefaultMutableTreeNode node, Session sess) {
+		// TODO Auto-generated method stub
+		int sessId=sess.id;
+		//sess.detail=restConnector.asynchGetSessionDetail(sessId);
+		sess.detail=restConnector.getSessionDetail(sess);
+		
 	}
 
 	// final UserSessionTableRenderer rdr = new UserSessionTableRenderer();

@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.Future;
 
 import json.AttendanceInstance;
 import json.Course;
@@ -31,6 +32,9 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
 import com.google.gson.Gson;
+import com.ning.http.client.AsyncHttpClient;
+import com.ning.http.client.AsyncHttpClient.BoundRequestBuilder;
+import com.ning.http.client.Response;
 
 public class MoodleRest {
 
@@ -407,34 +411,6 @@ public class MoodleRest {
 
 	}
 
-	public static void main2(String[] args) throws Exception {
-		// MoodleRest restConnector=new MoodleRest(moodleURL);//parameter can't
-		// be initialized before constructor ?
-		// MoodleRest restConnector = new MoodleRest("http://127.0.0.1/moodle");
-		MoodleRest restConnector = new MoodleRest(
-				"https://cs.cepatpintar.biz.id/moodle");
-		// restConnector.setMoodleURL(moodleURL.getText());
-		restConnector.setUsername("007");// TODO ask user input
-		restConnector.setPassword("007"); // TODO ask user input
-
-		String d = "28/12/2021 08:01:00";
-		SimpleDateFormat dateFormat = new SimpleDateFormat(
-				"dd/MM/yyyy HH:mm:ss");
-
-		String javaEpochLongTS = dateFormat.parse(d).getTime() + "";
-		restConnector.setService("fp_cepatpintar");
-		restConnector.get_date_courses(javaEpochLongTS);
-		// restConnector.updateUserStatus(50, "609", "220", "17",
-		// "17,19,20,18");
-
-	}
-
-	public static void main(String[] args) throws Exception {
-		main2(args);
-		// testTokenCP();
-
-	}
-
 	public SessionDetail asynchGetSessionDetail(int sessionId) throws Exception {
 		// TODO Auto-generated method stub
 		System.out.println("RC: asynchGS sessid=" + sessionId);
@@ -467,7 +443,8 @@ public class MoodleRest {
 		System.out.println("REST url : " + serverurl);
 		// System.out.println("REST url : " + serverurl);
 
-		HttpPost post = new HttpPost(serverurl);
+		AsyncHttpClient asyncHttpClient = new AsyncHttpClient();
+		BoundRequestBuilder post = asyncHttpClient.preparePost(serverurl);
 
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
 		params.add(new BasicNameValuePair("wstoken", wstoken));
@@ -484,26 +461,40 @@ public class MoodleRest {
 			System.out.println("nv adding to post:" + parameters[i]);
 			;
 			params.add(parameters[i]);
+			post.addParameter(parameters[i].getName(), parameters[i].getValue());
 		}
-		post.setEntity(new UrlEncodedFormEntity(params));
+
+		// TODO replace namepair with asyncversion here ...
+		// post.setEntity(new UrlEncodedFormEntity(params));
+		// post.
+
 		RestReturn myret = null;
 		// CloseableHttpClient httpclient = HttpClients.createDefault();
 		CloseableHttpClient httpclient = this.defaultHTTPClient();
+
 		try {
 
-			CloseableHttpResponse response = httpclient.execute(post);
-			HttpEntity entity = response.getEntity();
+			Future<Response> f = post.execute();
+
+			while (f.isDone()) {
+				Thread.currentThread().sleep(1000);
+				System.out.println("Not done");
+			}
+			Response r = f.get();
+
+			// HttpEntity entity = response.getEntity();
 			myret = new RestReturn();
-			myret.response = EntityUtils.toString(entity, "UTF-8");
+			// myret.response = EntityUtils.toString(entity, "UTF-8");
+			myret.response = r.getResponseBody("UTF-8");
 			System.out.println(myret.response);
-			response.close();
+			// response.close();
 
 			return myret;
 
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
-			post.releaseConnection();
+			// post.releaseConnection();
 		}
 
 		if (myret != null) {
@@ -551,6 +542,34 @@ public class MoodleRest {
 		// t.start();
 		r.run();
 		return sess.detail;
+	}
+
+	public static void main2(String[] args) throws Exception {
+		// MoodleRest restConnector=new MoodleRest(moodleURL);//parameter can't
+		// be initialized before constructor ?
+		// MoodleRest restConnector = new MoodleRest("http://127.0.0.1/moodle");
+		MoodleRest restConnector = new MoodleRest(
+				"https://cs.cepatpintar.biz.id/moodle");
+		// restConnector.setMoodleURL(moodleURL.getText());
+		restConnector.setUsername("007");// TODO ask user input
+		restConnector.setPassword("007"); // TODO ask user input
+
+		String d = "28/12/2021 08:01:00";
+		SimpleDateFormat dateFormat = new SimpleDateFormat(
+				"dd/MM/yyyy HH:mm:ss");
+
+		String javaEpochLongTS = dateFormat.parse(d).getTime() + "";
+		restConnector.setService("fp_cepatpintar");
+		restConnector.get_date_courses(javaEpochLongTS);
+		// restConnector.updateUserStatus(50, "609", "220", "17",
+		// "17,19,20,18");
+
+	}
+
+	public static void main(String[] args) throws Exception {
+		// main2(args);
+		testTokenCP();
+
 	}
 
 }

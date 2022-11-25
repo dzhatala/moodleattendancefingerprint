@@ -718,15 +718,15 @@ public class MoodleRest {
 							// TODO Auto-generated method stub
 							RestReturn rrf = null;
 							try {
-								rrf = asyncREST(moodleURL, stf,
-										"mod_wsattendance_get_session",
-										new BasicNameValuePair[] { nvf }, null);
-								SessionDetail sessDetail = null;
-								if (rrf != null)
-									gson.fromJson(rrf.response,
-											SessionDetail.class);
-
-								sess[kf].detail = sessDetail;
+//								rrf = asyncREST(moodleURL, stf,
+//										"mod_wsattendance_get_session",
+//										new BasicNameValuePair[] { nvf }, null);
+//								SessionDetail sessDetail = null;
+//								if (rrf != null)
+//									gson.fromJson(rrf.response,
+//											SessionDetail.class);
+//								sess[kf].detail = sessDetail;
+								sess[kf].detail = getSessionDetail(sess[kf]);
 								// MoodleUser[] musers = sessDetail.users;
 							} catch (Exception e) {
 								// TODO Auto-generated catch block
@@ -736,9 +736,9 @@ public class MoodleRest {
 
 					};
 
-					Thread t = new Thread(r);
-					t.start();
-					// r.run();
+//					Thread t = new Thread(r);
+//					t.start();
+					 r.run();
 
 				}
 			}

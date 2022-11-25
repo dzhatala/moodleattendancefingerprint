@@ -11,6 +11,6 @@ set cp_cp=%cp_cp%;libs/mysql-connector-java-5.1.46.jar
 @set cp_cp=%cp_cp%;..\lib\https\httpcomponents-client-4.3.2\lib\httpclient-cache-4.3.2.jar
 @set cp_cp=%cp_cp%;..\lib\https\httpcomponents-client-4.3.2\lib\httpcore-4.3.1.jar
 @set cp_cp=%cp_cp%;..\lib\https\httpcomponents-client-4.3.2\lib\httpmime-4.3.2.jar
-
+@set cp_cp=%cp_cp%;F:\rsync\RESEARCHS\text_recognition_ocr_dns_scan\tesseract_win\tess4j_01\jar_files\slf4j-api-1.7.36.jar;
 
 call e:\master\java\jdk1.8.0_40\jre\bin\java -cp %cp_cp% cpintar.Launcher 

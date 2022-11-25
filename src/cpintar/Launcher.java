@@ -969,7 +969,6 @@ public class Launcher extends JFrame {
 
 					};
 
-					// EventQueue.invokeLater(r);
 					r.run();
 
 					// wait or cancell connection ....

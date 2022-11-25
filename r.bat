@@ -1,4 +1,4 @@
-set cp_cp=bin2;libs\beandt.jar;libs\dbswing.jar;libs\dx.jar;libs\gson-2.8.7-javadoc.jar;libs\gson-2.8.7.jar;libs\json-simple-1.1.1.jar
+set cp_cp=bin;libs\beandt.jar;libs\dbswing.jar;libs\dx.jar;libs\gson-2.8.7-javadoc.jar;libs\gson-2.8.7.jar;libs\json-simple-1.1.1.jar
 
 
 set cp_cp=%cp_cp%;libs/mysql-connector-java-5.1.46-bin.jar

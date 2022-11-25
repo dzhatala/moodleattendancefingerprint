@@ -773,7 +773,7 @@ public class Launcher extends JFrame {
 			final String fnlRemarks = remarks;
 
 			if (tableModel.isStatusChanged(i)) {
-				EventQueue.invokeLater(new Runnable() {
+				Runnable r=new Runnable() {
 					public void run() {
 
 						try {
@@ -798,7 +798,8 @@ public class Launcher extends JFrame {
 							setCursor(Cursor.DEFAULT_CURSOR);
 						}
 					}
-				});
+				};
+				r.run();
 			}
 		}
 	}
@@ -952,8 +953,11 @@ public class Launcher extends JFrame {
 						public void run() {
 							// TODO Auto-generated method stub
 							try {
-								ch.course = restConnector.get_date_courses(d
+//								ch.course = restConnector.get_date_courses(d
+//										.getTime() + "");
+								ch.course = restConnector.asyncGet_date_courses(d
 										.getTime() + "");
+								
 							} catch (Exception e) {
 								// TODO Auto-generated catch block
 								showException(e);

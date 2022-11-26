@@ -648,9 +648,13 @@ public class MoodleRest {
 
 		// core_user_get_users_by_field must be combined into fp_yoga in order
 		// to be used here
-		String passToken = getLastToken().getToken();
+		String passToken = null;
+		if (getLastToken() != null)
+			passToken = getLastToken().getToken();
 		if (token != null)
 			passToken = token.getToken();
+		if (passToken == null)
+			return new Course[0];
 		RestReturn rr = asyncREST(moodleURL, passToken,
 				"core_user_get_users_by_field", new BasicNameValuePair[] { nv1,
 						nv2 }, format);
@@ -718,14 +722,14 @@ public class MoodleRest {
 							// TODO Auto-generated method stub
 							RestReturn rrf = null;
 							try {
-//								rrf = asyncREST(moodleURL, stf,
-//										"mod_wsattendance_get_session",
-//										new BasicNameValuePair[] { nvf }, null);
-//								SessionDetail sessDetail = null;
-//								if (rrf != null)
-//									gson.fromJson(rrf.response,
-//											SessionDetail.class);
-//								sess[kf].detail = sessDetail;
+								// rrf = asyncREST(moodleURL, stf,
+								// "mod_wsattendance_get_session",
+								// new BasicNameValuePair[] { nvf }, null);
+								// SessionDetail sessDetail = null;
+								// if (rrf != null)
+								// gson.fromJson(rrf.response,
+								// SessionDetail.class);
+								// sess[kf].detail = sessDetail;
 								sess[kf].detail = getSessionDetail(sess[kf]);
 								// MoodleUser[] musers = sessDetail.users;
 							} catch (Exception e) {
@@ -736,9 +740,9 @@ public class MoodleRest {
 
 					};
 
-//					Thread t = new Thread(r);
-//					t.start();
-					 r.run();
+					Thread t = new Thread(r);
+					t.start();
+					// r.run();
 
 				}
 			}

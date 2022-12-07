@@ -1,6 +1,10 @@
-Sun Nov 13 21:48:22 KST 2022
+Wed Dec  7 08:16:17 KST 2022
+
+-1. create local Attendance/Session
+	connect ONCe to moodle , and cache structure to local backup ... 
 0. provide user a button (gui) for cancelling connection. Using asynchronous non blocking httpRespones ?
 	asynchronous 
 1. check if getToken() is called minimal in multithread environment
-2. provid fingerprint devices support ... 
-3. chcck if application already launched.
+2. token timeout ? in server or in app ?
+2. provide fingerprint devices support ... 
+3. check if application already launched.

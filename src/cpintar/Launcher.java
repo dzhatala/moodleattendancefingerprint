@@ -258,8 +258,8 @@ public class Launcher extends JFrame {
 				}
 			};
 			JMenuItem item;
-//			popup.add(item = new JMenuItem("Reload Session", new ImageIcon(
-//					"1.gif")));
+			// popup.add(item = new JMenuItem("Reload Session", new ImageIcon(
+			// "1.gif")));
 			popup.add(item = new JMenuItem("Reload Session"));
 			item.setHorizontalTextPosition(JMenuItem.RIGHT);
 			item.addActionListener(menuListener);
@@ -295,10 +295,15 @@ public class Launcher extends JFrame {
 	 */
 	protected void reloadSession(DefaultMutableTreeNode node, Session sess) {
 		// TODO Auto-generated method stub
-		int sessId=sess.id;
-		//sess.detail=restConnector.asynchGetSessionDetail(sessId);
-		sess.detail=restConnector.getSessionDetail(sess);
-		
+		int sessId = sess.id;
+		// sess.detail=restConnector.asynchGetSessionDetail(sessId);
+		sess.detail = restConnector.getSessionDetail(sess);
+		if(sess.detail!=null){
+			DefaultTreeModel courseTreeNode = (DefaultTreeModel) courseTree
+					.getModel();
+			courseTreeNode.reload(node);
+		}
+
 	}
 
 	// final UserSessionTableRenderer rdr = new UserSessionTableRenderer();
@@ -472,7 +477,7 @@ public class Launcher extends JFrame {
 		LogDetail log = new LogDetail(this, row, tableModel);
 		// log.setSize(300, 200);
 		log.setVisible(true);
-		// log.dispose();
+		log.dispose(); // MUST DISPOSE
 
 	}
 
@@ -773,7 +778,7 @@ public class Launcher extends JFrame {
 			final String fnlRemarks = remarks;
 
 			if (tableModel.isStatusChanged(i)) {
-				Runnable r=new Runnable() {
+				Runnable r = new Runnable() {
 					public void run() {
 
 						try {
@@ -953,11 +958,11 @@ public class Launcher extends JFrame {
 						public void run() {
 							// TODO Auto-generated method stub
 							try {
-//								ch.course = restConnector.get_date_courses(d
-//										.getTime() + "");
-								ch.course = restConnector.asyncGet_date_courses(d
-										.getTime() + "");
-								
+								// ch.course = restConnector.get_date_courses(d
+								// .getTime() + "");
+								ch.course = restConnector
+										.asyncGet_date_courses(d.getTime() + "");
+
 							} catch (Exception e) {
 								// TODO Auto-generated catch block
 								showException(e);

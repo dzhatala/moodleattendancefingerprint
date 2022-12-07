@@ -554,6 +554,8 @@ public class MoodleRest {
 					rrf = asyncREST(moodleURL, tf.getToken(),
 							"mod_wsattendance_get_session",
 							new BasicNameValuePair[] { nvf }, null);
+					if (rrf == null)
+						return;
 					SessionDetail sessDetail = gson.fromJson(rrf.response,
 							SessionDetail.class);
 

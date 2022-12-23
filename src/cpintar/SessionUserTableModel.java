@@ -229,11 +229,21 @@ public class SessionUserTableModel extends DefaultTableModel {
 								long cek1 = fdp.getPRINT_TS();// just
 																// initialization
 								long lowestNow = fdp.getPRINT_TS();
+
+								boolean earlier = false;
+								boolean later = false;
 								for (int i = 0; i < TSs.length; i++) {
-									cek1 = TSs[i] / 1000 - sessionStart;
+									cek1 = TSs[i] / 1000 - sessionStart; // later
+									earlier = cek1 < 0; // problem Elsa pbo 5a
+														// 21
+														// desember 2022
+									later = TSs[i] / 1000 > sessEnd; // must cek
+																		// earlier
+																		// and
+									// later
 									if (cek1 < 0)
 										cek1 *= -1;
-									if (cek1 < magnitude) {
+									if (!earlier && !later && cek1 < magnitude) {
 										fdp.removeTimeStamp(TSs[i]); // remove
 																		// lowest
 										fdp.addTimestamp(fdp.getPRINT_TS()); // add

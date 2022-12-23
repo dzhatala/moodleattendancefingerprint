@@ -858,6 +858,7 @@ public class Launcher extends JFrame {
 																	// moodlee
 																	// time
 
+						// TODO 'earlier time' taken shadows 'correct time'
 						if (fingerTime >= sessionStart & fingerTime <= sessEnd) {
 							inTime = true;
 						}

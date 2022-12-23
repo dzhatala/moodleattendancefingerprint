@@ -30,7 +30,7 @@ public class LogDetail extends JDialog {
 	private JTextField localLastName;
 	private JTextField remoteLastName;
 	private JTextField remoteFirstName;
-	private JTextField locaID;
+	private JTextField localID;
 	private SessionUserTableModel tableModel;
 	private int _row = -1;
 	private JTextField remoteStatus;
@@ -78,15 +78,15 @@ public class LogDetail extends JDialog {
 		gbc_lblLocalId.gridy = 2;
 		panel.add(lblLocalId, gbc_lblLocalId);
 
-		locaID = new JTextField();
-		locaID.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		localID = new JTextField();
+		localID.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		GridBagConstraints gbc_locaID = new GridBagConstraints();
 		gbc_locaID.insets = new Insets(0, 0, 5, 5);
 		gbc_locaID.fill = GridBagConstraints.HORIZONTAL;
 		gbc_locaID.gridx = 1;
 		gbc_locaID.gridy = 2;
-		panel.add(locaID, gbc_locaID);
-		locaID.setColumns(10);
+		panel.add(localID, gbc_locaID);
+		localID.setColumns(10);
 
 		JLabel lblRemoteId = new JLabel("Remote Id");
 		lblRemoteId.setFont(new Font("Tahoma", Font.PLAIN, 20));

@@ -1,1 +1,1 @@
-jar cfm kalesang.jar manifest.txt -C bin . libs 
+jar cfm kalesang.jar manifest.txt -C bin .

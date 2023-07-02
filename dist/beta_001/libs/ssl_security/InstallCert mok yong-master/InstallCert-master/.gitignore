@@ -1,6 +1,0 @@
-*.class
-*.cert
-jssecacerts
-.idea
-out/*
-*.iml

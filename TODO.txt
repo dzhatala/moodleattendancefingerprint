@@ -1,5 +1,10 @@
 Wed Dec  7 08:16:17 KST 2022
 
+-3. in mysql auto create session for remote local mapping ...  
+-2. remote_id local_id auto mapping ...
+	must based on name (first, middle,last) because username is used for login, so it isn't transferred via
+	json/webservice. only user id is transferred
+	
 -1. create local Attendance/Session
 	connect ONCe to moodle , and cache structure to local backup ... 
 0. provide user a button (gui) for cancelling connection. Using asynchronous non blocking httpRespones ?
@@ -11,3 +16,4 @@ Wed Dec  7 08:16:17 KST 2022
 5. earlier 'before start'  time shadowing  correct time, 21/22/2022 pbo elsa nania agustina
 	-Launcher.autosetPresent
 	-SessionUsertablemode initValues()
+6. 

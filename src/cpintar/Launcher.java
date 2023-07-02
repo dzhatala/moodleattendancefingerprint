@@ -127,6 +127,7 @@ public class Launcher extends JFrame {
 					frame.courseTree.setFont(frame.defaultFont);
 					// frame.userSessionTable.set
 					frame.initListeners();
+					frame.initMenu();
 					frame.pack(); // centering
 					frame.setLocationRelativeTo(null);
 					frame.setVisible(true);
@@ -138,6 +139,11 @@ public class Launcher extends JFrame {
 			}
 		});
 
+	}
+
+	protected void initMenu() {
+		// TODO Auto-generated method stub
+		System.out.println("Initialize menu");
 	}
 
 	// TODO bigger font ?

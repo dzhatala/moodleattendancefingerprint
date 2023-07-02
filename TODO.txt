@@ -1,5 +1,7 @@
 Wed Dec  7 08:16:17 KST 2022
 
+-4. packager 
+	launch4J
 -3. in mysql auto create session for remote local mapping ...  
 -2. remote_id local_id auto mapping ...
 	must based on name (first, middle,last) because username is used for login, so it isn't transferred via

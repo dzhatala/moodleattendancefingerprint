@@ -12,3 +12,4 @@ Version: Kepler Service Release 1
 Build id: 20130919-0819
 
 
+deploy: make_jar.bat

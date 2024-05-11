@@ -3,7 +3,7 @@ package json;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import moodle_login_01.Utils;
+import moodle.Utils;
 
 public class Session {
 	public int id;

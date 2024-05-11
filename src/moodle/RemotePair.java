@@ -1,4 +1,4 @@
-package moodle_login_01;
+package moodle;
 
 public class RemotePair {
 	long local=-1;

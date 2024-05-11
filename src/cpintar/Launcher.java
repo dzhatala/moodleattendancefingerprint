@@ -15,7 +15,9 @@ import javax.swing.event.TableModelListener;
 
 import com.borland.dbswing.JdbTable;
 
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
@@ -32,15 +34,16 @@ import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTree;
 import javax.swing.WindowConstants;
 import javax.swing.JSplitPane;
 
-import moodle_login_01.FingerDatePair;
-import moodle_login_01.MoodleRest;
-import moodle_login_01.MysqlConnector;
-import moodle_login_01.RemotePair;
-import moodle_login_01.Utils;
+import moodle.FingerDatePair;
+import moodle.MoodleRest;
+import moodle.MysqlConnector;
+import moodle.RemotePair;
+import moodle.Utils;
 
 import java.awt.Font;
 import java.awt.event.ActionListener;
@@ -64,6 +67,9 @@ import json.Course;
 import json.MoodleUser;
 import json.Session;
 import json.SessionDetail;
+
+import javax.swing.JMenuBar;
+import javax.swing.JMenu;
 
 /**
  * Main application GUI
@@ -304,7 +310,7 @@ public class Launcher extends JFrame {
 		int sessId = sess.id;
 		// sess.detail=restConnector.asynchGetSessionDetail(sessId);
 		sess.detail = restConnector.getSessionDetail(sess);
-		if(sess.detail!=null){
+		if (sess.detail != null) {
 			DefaultTreeModel courseTreeNode = (DefaultTreeModel) courseTree
 					.getModel();
 			courseTreeNode.reload(node);
@@ -331,9 +337,18 @@ public class Launcher extends JFrame {
 	private JLabel lblFinger;
 	private JButton btnSetAllPresent;
 	private JButton btnSettings;
+	private JMenuBar menuBar;
+	private JMenu mnNewMenu;
+	private JMenuItem mntmOpenFinger;
+	private JMenu mnData;
+	private JMenuItem mntmLocalremoteMapping;
+	private JButton btLast;
+	private JPanel panel;
+	private JPanel panel_1;
+	private JButton btNextDay;
 
 	/**
-	 * node of session
+	 * show ad session Table ?
 	 * 
 	 * @param sessionNode
 	 */
@@ -359,7 +374,7 @@ public class Launcher extends JFrame {
 			}
 
 		// if()
-		System.out.println("localsDetected length=" + localsDetected.length);
+//		System.out.println("localsDetected length=" + localsDetected.length);
 		for (int i = 0; i < localsDetected.length; i++) {
 			localsDetected[i] = rlPairs[i].getLocal();
 		}
@@ -393,9 +408,17 @@ public class Launcher extends JFrame {
 			}
 
 		});
-		userSessionTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+//		userSessionTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+		userSessionTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		userSessionTable.setAutoResizeMode(JTable.AUTO_RESIZE_NEXT_COLUMN);
 		userSessionTable.setModel(tableModel);
-
+		
+		
+//		WrapCellRenderer wcr=new WrapCellRenderer();
+		TableColumnModel cm=userSessionTable.getColumnModel();
+		cm.getColumn(SessionUserTableModel.COL_LOCALID).setWidth(5);
+		cm.getColumn(SessionUserTableModel.COL_REMOTEID).setWidth(5);
+		
 		/*
 		 * userSessionTable = new JdbTable() { public TableCellRenderer
 		 * getCellRenderer(int row, int column) { return rdr; } };
@@ -405,6 +428,7 @@ public class Launcher extends JFrame {
 
 		final UserSessionTableRenderer rdr = new UserSessionTableRenderer(
 				tableModel);
+		
 		userSessionTable.setDefaultRenderer(Object.class, rdr);
 		userSessionTable.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent me) {
@@ -450,7 +474,7 @@ public class Launcher extends JFrame {
 		col = userSessionTable.getColumnModel().getColumn(
 				SessionUserTableModel.COL_FINGERDATE);
 
-		FingerDateCellEditor fdEditor = new FingerDateCellEditor();
+		final FingerDateCellEditor fdEditor = new FingerDateCellEditor();
 
 		col.setCellEditor(fdEditor);
 
@@ -460,6 +484,22 @@ public class Launcher extends JFrame {
 		// + userSessionTable.getModel().getColumnCount());
 
 		// sess.detail.sessdate;
+		fdEditor.addCellEditorListener(new CellEditorListener() {
+			
+			@Override
+			public void editingStopped(ChangeEvent e) {
+				// TODO Auto-generated method stub
+				sessionEditorValue(fdEditor.getCellEditorValue());
+			}
+			
+			@Override
+			public void editingCanceled(ChangeEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		
+		
 		Date sd = new Date(sess.detail.sessdate * 1000);
 
 		lblDate.setText(dateFormatZone.format(sd));
@@ -499,7 +539,7 @@ public class Launcher extends JFrame {
 
 		case TableModelEvent.UPDATE:
 			// System.out.println("update in col=" + icol + ", row=" + icol);
-			if (icol == SessionUserTableModel.COL_STATUS) {
+			if (icol == SessionUserTableModel.COL_STATUS|icol==SessionUserTableModel.COL_FINGERDATE) {
 				this.btnSyncChangeMoodle.setEnabled(true);
 				btnUndoChange.setEnabled(true);
 				//
@@ -518,8 +558,8 @@ public class Launcher extends JFrame {
 	}
 
 	/***
-	 * 
-	 */
+		 * 
+		 */
 	private void hello() {
 		// tableModel.setDataSet(tableDataSet);
 	}
@@ -531,6 +571,27 @@ public class Launcher extends JFrame {
 		setTitle("Student Attendance");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 1048, 736);
+
+		menuBar = new JMenuBar();
+		setJMenuBar(menuBar);
+
+		mnNewMenu = new JMenu("Bio Device");
+		menuBar.add(mnNewMenu);
+
+		mntmOpenFinger = new JMenuItem("Open");
+		mnNewMenu.add(mntmOpenFinger);
+
+		mnData = new JMenu("Data");
+		menuBar.add(mnData);
+
+		mntmLocalremoteMapping = new JMenuItem("Local=Remote Mapping");
+		mntmLocalremoteMapping.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				showUserMapping();
+			}
+
+		});
+		mnData.add(mntmLocalremoteMapping);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
@@ -538,54 +599,80 @@ public class Launcher extends JFrame {
 
 		JPanel datePanel = new JPanel();
 		contentPane.add(datePanel, BorderLayout.NORTH);
+		datePanel.setLayout(new BorderLayout(0, 0));
+		
+		panel = new JPanel();
+		datePanel.add(panel, BorderLayout.CENTER);
+				
+						JLabel lblServer = new JLabel("Server");
+						panel.add(lblServer);
+						lblServer.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		
+				moodleURL = new JComboBox();
+				panel.add(moodleURL);
+				moodleURL.setFont(new Font("Tahoma", Font.PLAIN, 20));
+						
+								btnSettings = new JButton("Settings");
+								panel.add(btnSettings);
+								
+										JButton btnRefresh = new JButton("Get");
+										panel.add(btnRefresh);
+										btnRefresh.addActionListener(new ActionListener() {
+											public void actionPerformed(ActionEvent e) {
+												connectAndRefreshTree();
 
-		JLabel lblServer = new JLabel("Server");
-		lblServer.setFont(new Font("Tahoma", Font.PLAIN, 18));
-		datePanel.add(lblServer);
-
-		JButton previousSession = new JButton("<");
-		previousSession.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				setPreviousSession(courseDate);
-			}
-		});
-
-		moodleURL = new JComboBox();
-		moodleURL.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		datePanel.add(moodleURL);
-
-		btnSettings = new JButton("Settings");
-		btnSettings.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				openSettingsDialogs(getInstance());
-			}
-		});
-		datePanel.add(btnSettings);
-		datePanel.add(previousSession);
-
-		JButton nextSession = new JButton(">");
-		nextSession.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				setNextSession(courseDate);
-			}
-		});
-		datePanel.add(nextSession);
-
-		courseDate = new JComboBox();
-		courseDate.setToolTipText("enter valid date and press connect button");
-		courseDate.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		courseDate.setEditable(true);
-		datePanel.add(courseDate);
-
-		JButton btnRefresh = new JButton("Connect");
-		btnRefresh.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				connectAndRefreshTree();
-
-			}
-		});
-		btnRefresh.setFont(new Font("Tahoma", Font.PLAIN, 18));
-		datePanel.add(btnRefresh);
+											}
+										});
+										btnRefresh.setFont(new Font("Tahoma", Font.PLAIN, 18));
+								btnSettings.addActionListener(new ActionListener() {
+									public void actionPerformed(ActionEvent e) {
+										openSettingsDialogs(getInstance());
+									}
+								});
+		
+		panel_1 = new JPanel();
+		datePanel.add(panel_1, BorderLayout.EAST);
+						
+								JButton previousWeek = new JButton("<");
+								panel_1.add(previousWeek);
+								previousWeek.setToolTipText("last week");
+								previousWeek.addActionListener(new ActionListener() {
+									public void actionPerformed(ActionEvent e) {
+										setPreviousSession(courseDate);
+									}
+								});
+						
+						btLast = new JButton("-");
+						panel_1.add(btLast);
+						btLast.setToolTipText("last day");
+						btLast.addActionListener(new ActionListener() {
+							public void actionPerformed(ActionEvent e) {
+								setLastDay(courseDate);
+							}
+						});
+						
+						btNextDay = new JButton("+");
+						panel_1.add(btNextDay);
+						btNextDay.addActionListener(new ActionListener() {
+							public void actionPerformed(ActionEvent e) {
+								setNextDay(courseDate);
+							}
+						});
+				
+						JButton nextWeek = new JButton(">");
+						panel_1.add(nextWeek);
+						nextWeek.setToolTipText("next week");
+						nextWeek.addActionListener(new ActionListener() {
+							public void actionPerformed(ActionEvent e) {
+								setNextSession(courseDate);
+							}
+						});
+		
+				courseDate = new JComboBox();
+				panel_1.add(courseDate);
+				courseDate.setToolTipText("enter valid date and press connect button");
+				courseDate.setFont(new Font("Tahoma", Font.PLAIN, 20));
+				courseDate.setEditable(true);
 
 		splitPane = new JSplitPane();
 		contentPane.add(splitPane, BorderLayout.CENTER);
@@ -664,6 +751,17 @@ public class Launcher extends JFrame {
 		contentPane.add(scrollPane, BorderLayout.WEST);
 	}
 
+	protected void showUserMapping() {
+		// TODO Auto-generated method stub
+		l("showuserMapping()");
+
+	}
+
+	private void l(String string) {
+		// TODO Auto-generated method stub
+		System.out.println(string);
+	}
+
 	protected void openSettingsDialogs(Launcher owner) {
 		// TODO Auto-generated method stub
 		Settings sets = Settings.getInstance();
@@ -738,6 +836,49 @@ public class Launcher extends JFrame {
 		}
 
 	}
+	
+	protected void setNextDay(JComboBox cd) {
+		// TODO Auto-generated method stub
+		String original = cd.getEditor().getItem().toString();
+		// System.out.println("sPS() original:"+original);
+		try {
+			Date newDate = dateFormat.parse(original);
+			GregorianCalendar calendar = new GregorianCalendar();
+			calendar.setTime(newDate);
+			calendar.add(Calendar.DATE, +1);// increase a week
+			newDate.setTime(calendar.getTime().getTime());
+
+			cd.getEditor().setItem(dateFormat.format(newDate));
+			;
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			showException(e);
+		}
+
+	}
+
+	protected void setLastDay(JComboBox cd) {
+		// TODO Auto-generated method stub
+		String original = cd.getEditor().getItem().toString();
+		// System.out.println("sPS() original:"+original);
+		try {
+			Date newDate = dateFormat.parse(original);
+			GregorianCalendar calendar = new GregorianCalendar();
+			calendar.setTime(newDate);
+			calendar.add(Calendar.DATE, -1);// increase a week
+			newDate.setTime(calendar.getTime().getTime());
+
+			cd.getEditor().setItem(dateFormat.format(newDate));
+			;
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			showException(e);
+		}
+
+	}
+
 
 	protected void statusSynch2Moodle(ActionEvent e) {
 		int dialogButton = JOptionPane.showConfirmDialog(null,
@@ -762,10 +903,13 @@ public class Launcher extends JFrame {
 					+ " : isStChngd? " + tableModel.isStatusChanged(i));
 			final String studentid = tableModel.getValueAt(i,
 					tableModel.COL_REMOTEID) + "";
+			final Object cs = tableModel.getValueAt(i, tableModel.COL_STATUS);
+			if (cs == null) {
+				l("cs=null, row number=" + i);
+				continue;
+			}
 			final String statusid = AttendanceStatusInfo.descriptionToID(
-					tableModel.getStatusInfos(),
-					tableModel.getValueAt(i, tableModel.COL_STATUS).toString())
-					+ "";
+					tableModel.getStatusInfos(), cs.toString()) + "";
 
 			// TODO
 			String remarks = null;

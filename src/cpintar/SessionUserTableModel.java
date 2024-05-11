@@ -8,8 +8,8 @@ import java.util.Vector;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
-import moodle_login_01.FingerDatePair;
-import moodle_login_01.RemotePair;
+import moodle.FingerDatePair;
+import moodle.RemotePair;
 import json.AttendanceStatusInfo;
 import json.AttendanceStudentInfo;
 import json.SessionDetail;
@@ -263,7 +263,18 @@ public class SessionUserTableModel extends DefaultTableModel {
 							// o)
 							// .intValue());
 						} else {
-							return "NOT TAKEN";
+
+							key = _detail.users[row - 1].id + "";
+							o = studentId2log.get(key);
+							if (o != null) {
+								AttendanceStudentInfo info = (AttendanceStudentInfo) o;
+								if (info != null) {
+									if (info.remarks != null)
+										return info.remarks + " ";
+								}
+
+							}
+							return FINGER_NOT_TAKEN;
 						}
 
 					default:

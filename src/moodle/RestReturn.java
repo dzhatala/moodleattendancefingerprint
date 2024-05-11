@@ -1,4 +1,4 @@
-package moodle_login_01;
+package moodle;
 
 
 enum ReturnType{XML,JSON};

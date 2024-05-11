@@ -19,7 +19,7 @@ import javax.swing.JTextField;
 import javax.swing.JTextArea;
 import javax.swing.table.TableModel;
 
-import moodle_login_01.FingerDatePair;
+import moodle.FingerDatePair;
 
 import java.awt.Font;
 import java.awt.event.ActionListener;

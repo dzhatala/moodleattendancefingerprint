@@ -6,11 +6,13 @@ import java.sql.Timestamp;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.table.TableModel;
 
 import com.borland.dbswing.JdbTable;
 
-import moodle_login_01.FingerDatePair;
+import moodle.FingerDatePair;
 import json.AttendanceStatusInfo;
 
 /**
@@ -22,7 +24,8 @@ import json.AttendanceStatusInfo;
 public class FingerDateCellEditor extends DefaultCellEditor {
 
 	static JComboBox jComboBox = new JComboBox();
-
+	static JTextField jt=new JTextField();
+	static boolean useComboBox=true;
 	public FingerDateCellEditor() {
 		super(jComboBox);
 		// JComboBox cb=()getComponent();
@@ -33,9 +36,8 @@ public class FingerDateCellEditor extends DefaultCellEditor {
 
 	public Component getTableCellEditorComponent(JTable table, Object value,
 			boolean isSelected, int row, int column) {
-		Component c = super.getTableCellEditorComponent(table, value,
-				isSelected, row, column);
-
+		
+		useComboBox=true;
 		// if(true==true)return null; //debug
 
 		// System.out.println("FDCE removing all item in combo");
@@ -82,13 +84,22 @@ public class FingerDateCellEditor extends DefaultCellEditor {
 
 				/*if (value == null) {// NOT TAKEN
 					return null;
-				}
-				if (value instanceof String) {
-					if (SessionUserTableModel.FINGER_NOT_TAKEN
-							.equalsIgnoreCase(value.toString()))
-						return null;
 				}*/
+				if (value instanceof String) {
+					jComboBox.addItem(value);
+//					jComboBox.setEditable(true);
+				}
 
+				Object stvalue=getValue(table, row, SessionUserTableModel.COL_STATUS);
+				System.out.println("finger edit status= #"+stvalue+"#, class:"+stvalue.getClass() );
+//				
+				
+				// TODO ENTER after edit NOT changing valuesss .. BUT till back to the ori val
+				if(stvalue.toString().equalsIgnoreCase("Absent") ){
+					useComboBox=false;
+					jt.setText(value.toString()); //fix value may not be string
+					return jt;
+					}
 				// jComboBox.addItem(SessionUserTableModel.FINGER_NOT_TAKEN);
 				// TODO ERROR removing all options
 
@@ -108,9 +119,20 @@ public class FingerDateCellEditor extends DefaultCellEditor {
 		 * 
 		 * return combo.getSelectedItem(); }
 		 */
-
+		if(useComboBox)
 		return jComboBox.getSelectedItem();
+		if(!useComboBox) return jt.getText();
+		
+		return null;
 
+	}
+	
+	Object getValue(JTable table, int row ,int column){
+		
+		TableModel tm= table.getModel();
+		return tm.getValueAt(row, column);
+//		return null;
+		
 	}
 
 }

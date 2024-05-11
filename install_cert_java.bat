@@ -1,7 +1,13 @@
+@rem when you got PKIX error, it mean your JVM doen;t trust remote (webservice) YET
+@rem get remote CERT from firefox and save to your local drive.
+@rem use this script ton install downloaded CERT into JVM(jre/lib/security/cacerts)
+
+
 @rem NO NEED ? echo you must running java InstallCert first
 @set jre_bin=e:\master\java\jdk1.8.0_40\jre\bin
 
 
+@rem TARGET JVM 
 set var_keys=jssecacerts
 set var_keys=E:\master\java\jdk1.8.0_40\jre\lib\security\cacerts
 

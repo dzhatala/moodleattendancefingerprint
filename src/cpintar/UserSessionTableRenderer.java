@@ -4,10 +4,11 @@ import java.awt.Color;
 import java.awt.Component;
 
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableModel;
 
-import moodle_login_01.FingerDatePair;
+import moodle.FingerDatePair;
 
 import com.borland.dbswing.TableFastStringRenderer;
 
@@ -21,6 +22,7 @@ public class UserSessionTableRenderer extends DefaultTableCellRenderer {
 	public UserSessionTableRenderer(SessionUserTableModel tableModel) {
 		// TODO Auto-generated constructor stub
 		this.tableModel = tableModel;
+		
 	}
 
 	// StatusRenderer stRdr=new StatusRenderer();
@@ -29,8 +31,17 @@ public class UserSessionTableRenderer extends DefaultTableCellRenderer {
 
 		Component c = super.getTableCellRendererComponent(table, value,
 				isSelected, hasFocus, row, col);
+
+//		JTextArea c=new JTextArea();
+//		if(value!=null)
+//		c.setText(value.toString());
+//		c.setLineWrap(true);
+//		c.setWrapStyleWord(true);
+//		c.setFont(cold.getFont());
+//		
 		Color col_orig = c.getForeground();
 
+		if (this.tableModel.getStatusInfos()==null)c.setForeground(Color.RED);
 		if (this.tableModel.getFingerPair(row) == null) {
 			c.setForeground(Color.RED);
 		} else {
@@ -45,7 +56,7 @@ public class UserSessionTableRenderer extends DefaultTableCellRenderer {
 			String loca_LNAME = fdp.lastName.trim();
 			if (!(locfName.equalsIgnoreCase(rfName) & r_LName
 					.equalsIgnoreCase(loca_LNAME))) {
-				c.setForeground(Color.YELLOW);
+				c.setForeground(Color.BLUE);
 			} else {
 				c.setForeground(Color.BLACK);
 			}

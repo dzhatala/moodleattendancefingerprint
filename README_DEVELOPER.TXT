@@ -13,3 +13,5 @@ Build id: 20130919-0819
 
 
 deploy: make_jar.bat
+	    +  launch4j
+		

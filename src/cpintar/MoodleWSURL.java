@@ -35,7 +35,8 @@ public class MoodleWSURL {
 	}
 
 	public String toString() {
-		return profileName + " " + url + " (" + serviceName + ")";
+//		return profileName + " " + url + " (" + serviceName + ")";
+		return profileName ;
 	}
 
 	public String getUsername() {

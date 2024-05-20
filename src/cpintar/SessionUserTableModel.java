@@ -15,8 +15,8 @@ import json.AttendanceStudentInfo;
 import json.SessionDetail;
 
 /**
- * 
- * @author Zulkarnaen Hatala
+ *  // TODO, reload model only ... 
+ * @author zh
  * 
  */
 public class SessionUserTableModel extends DefaultTableModel {

@@ -25,6 +25,8 @@ import javax.swing.tree.TreePath;
 import com.borland.dx.sql.dataset.Database;
 import com.borland.dx.sql.dataset.ConnectionDescriptor;
 
+import cpintar.biometric.zkteco.ZKFPBioManager;
+
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -113,6 +115,8 @@ public class Launcher extends JFrame {
 			"dd/MM/yyyy 'T'HH:mm:ssZ");
 
 	// error
+
+	static ZKFPBioManager zkBioMgr = null;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -374,7 +378,7 @@ public class Launcher extends JFrame {
 			}
 
 		// if()
-//		System.out.println("localsDetected length=" + localsDetected.length);
+		// System.out.println("localsDetected length=" + localsDetected.length);
 		for (int i = 0; i < localsDetected.length; i++) {
 			localsDetected[i] = rlPairs[i].getLocal();
 		}
@@ -408,17 +412,16 @@ public class Launcher extends JFrame {
 			}
 
 		});
-//		userSessionTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+		// userSessionTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 		userSessionTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		userSessionTable.setAutoResizeMode(JTable.AUTO_RESIZE_NEXT_COLUMN);
 		userSessionTable.setModel(tableModel);
-		
-		
-//		WrapCellRenderer wcr=new WrapCellRenderer();
-		TableColumnModel cm=userSessionTable.getColumnModel();
+
+		// WrapCellRenderer wcr=new WrapCellRenderer();
+		TableColumnModel cm = userSessionTable.getColumnModel();
 		cm.getColumn(SessionUserTableModel.COL_LOCALID).setWidth(5);
 		cm.getColumn(SessionUserTableModel.COL_REMOTEID).setWidth(5);
-		
+
 		/*
 		 * userSessionTable = new JdbTable() { public TableCellRenderer
 		 * getCellRenderer(int row, int column) { return rdr; } };
@@ -428,7 +431,7 @@ public class Launcher extends JFrame {
 
 		final UserSessionTableRenderer rdr = new UserSessionTableRenderer(
 				tableModel);
-		
+
 		userSessionTable.setDefaultRenderer(Object.class, rdr);
 		userSessionTable.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent me) {
@@ -485,21 +488,20 @@ public class Launcher extends JFrame {
 
 		// sess.detail.sessdate;
 		fdEditor.addCellEditorListener(new CellEditorListener() {
-			
+
 			@Override
 			public void editingStopped(ChangeEvent e) {
 				// TODO Auto-generated method stub
 				sessionEditorValue(fdEditor.getCellEditorValue());
 			}
-			
+
 			@Override
 			public void editingCanceled(ChangeEvent e) {
 				// TODO Auto-generated method stub
-				
+
 			}
 		});
-		
-		
+
 		Date sd = new Date(sess.detail.sessdate * 1000);
 
 		lblDate.setText(dateFormatZone.format(sd));
@@ -539,7 +541,8 @@ public class Launcher extends JFrame {
 
 		case TableModelEvent.UPDATE:
 			// System.out.println("update in col=" + icol + ", row=" + icol);
-			if (icol == SessionUserTableModel.COL_STATUS|icol==SessionUserTableModel.COL_FINGERDATE) {
+			if (icol == SessionUserTableModel.COL_STATUS
+					| icol == SessionUserTableModel.COL_FINGERDATE) {
 				this.btnSyncChangeMoodle.setEnabled(true);
 				btnUndoChange.setEnabled(true);
 				//
@@ -579,6 +582,11 @@ public class Launcher extends JFrame {
 		menuBar.add(mnNewMenu);
 
 		mntmOpenFinger = new JMenuItem("Open");
+		mntmOpenFinger.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				openZKFPBioDevice(e);
+			}
+		});
 		mnNewMenu.add(mntmOpenFinger);
 
 		mnData = new JMenu("Data");
@@ -600,79 +608,79 @@ public class Launcher extends JFrame {
 		JPanel datePanel = new JPanel();
 		contentPane.add(datePanel, BorderLayout.NORTH);
 		datePanel.setLayout(new BorderLayout(0, 0));
-		
+
 		panel = new JPanel();
 		datePanel.add(panel, BorderLayout.CENTER);
-				
-						JLabel lblServer = new JLabel("Server");
-						panel.add(lblServer);
-						lblServer.setFont(new Font("Tahoma", Font.PLAIN, 18));
-		
-				moodleURL = new JComboBox();
-				panel.add(moodleURL);
-				moodleURL.setFont(new Font("Tahoma", Font.PLAIN, 20));
-						
-								btnSettings = new JButton("Settings");
-								panel.add(btnSettings);
-								
-										JButton btnRefresh = new JButton("Get");
-										panel.add(btnRefresh);
-										btnRefresh.addActionListener(new ActionListener() {
-											public void actionPerformed(ActionEvent e) {
-												connectAndRefreshTree();
 
-											}
-										});
-										btnRefresh.setFont(new Font("Tahoma", Font.PLAIN, 18));
-								btnSettings.addActionListener(new ActionListener() {
-									public void actionPerformed(ActionEvent e) {
-										openSettingsDialogs(getInstance());
-									}
-								});
-		
+		JLabel lblServer = new JLabel("Server");
+		panel.add(lblServer);
+		lblServer.setFont(new Font("Tahoma", Font.PLAIN, 18));
+
+		moodleURL = new JComboBox();
+		panel.add(moodleURL);
+		moodleURL.setFont(new Font("Tahoma", Font.PLAIN, 20));
+
+		btnSettings = new JButton("Settings");
+		panel.add(btnSettings);
+
+		JButton btnRefresh = new JButton("Get");
+		panel.add(btnRefresh);
+		btnRefresh.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				connectAndRefreshTree();
+
+			}
+		});
+		btnRefresh.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		btnSettings.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				openSettingsDialogs(getInstance());
+			}
+		});
+
 		panel_1 = new JPanel();
 		datePanel.add(panel_1, BorderLayout.EAST);
-						
-								JButton previousWeek = new JButton("<");
-								panel_1.add(previousWeek);
-								previousWeek.setToolTipText("last week");
-								previousWeek.addActionListener(new ActionListener() {
-									public void actionPerformed(ActionEvent e) {
-										setPreviousSession(courseDate);
-									}
-								});
-						
-						btLast = new JButton("-");
-						panel_1.add(btLast);
-						btLast.setToolTipText("last day");
-						btLast.addActionListener(new ActionListener() {
-							public void actionPerformed(ActionEvent e) {
-								setLastDay(courseDate);
-							}
-						});
-						
-						btNextDay = new JButton("+");
-						panel_1.add(btNextDay);
-						btNextDay.addActionListener(new ActionListener() {
-							public void actionPerformed(ActionEvent e) {
-								setNextDay(courseDate);
-							}
-						});
-				
-						JButton nextWeek = new JButton(">");
-						panel_1.add(nextWeek);
-						nextWeek.setToolTipText("next week");
-						nextWeek.addActionListener(new ActionListener() {
-							public void actionPerformed(ActionEvent e) {
-								setNextSession(courseDate);
-							}
-						});
-		
-				courseDate = new JComboBox();
-				panel_1.add(courseDate);
-				courseDate.setToolTipText("enter valid date and press connect button");
-				courseDate.setFont(new Font("Tahoma", Font.PLAIN, 20));
-				courseDate.setEditable(true);
+
+		JButton previousWeek = new JButton("<");
+		panel_1.add(previousWeek);
+		previousWeek.setToolTipText("last week");
+		previousWeek.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				setPreviousSession(courseDate);
+			}
+		});
+
+		btLast = new JButton("-");
+		panel_1.add(btLast);
+		btLast.setToolTipText("last day");
+		btLast.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				setLastDay(courseDate);
+			}
+		});
+
+		btNextDay = new JButton("+");
+		panel_1.add(btNextDay);
+		btNextDay.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				setNextDay(courseDate);
+			}
+		});
+
+		JButton nextWeek = new JButton(">");
+		panel_1.add(nextWeek);
+		nextWeek.setToolTipText("next week");
+		nextWeek.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				setNextSession(courseDate);
+			}
+		});
+
+		courseDate = new JComboBox();
+		panel_1.add(courseDate);
+		courseDate.setToolTipText("enter valid date and press connect button");
+		courseDate.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		courseDate.setEditable(true);
 
 		splitPane = new JSplitPane();
 		contentPane.add(splitPane, BorderLayout.CENTER);
@@ -749,6 +757,23 @@ public class Launcher extends JFrame {
 
 		scrollPane = new JScrollPane();
 		contentPane.add(scrollPane, BorderLayout.WEST);
+	}
+
+	protected void openZKFPBioDevice(ActionEvent e) {
+		// TODO Auto-generated method stub
+
+		if(zkBioMgr==null)
+		zkBioMgr=new ZKFPBioManager();
+		zkBioMgr.removeAllBioScanListener();
+		MysqlConnector mc = new MysqlConnector();
+		ConnectionDescriptor desc = new ConnectionDescriptor(
+				"jdbc:mysql://localhost:3306/absensi", "root", "", false,
+				"com.mysql.jdbc.Driver"); // TODO profile GUI editor
+		mc.setMySQLDescriptor(desc);
+		zkBioMgr.setMySQLConnector(mc);
+		zkBioMgr.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		zkBioMgr.setVisible(true);
+
 	}
 
 	protected void showUserMapping() {
@@ -836,7 +861,7 @@ public class Launcher extends JFrame {
 		}
 
 	}
-	
+
 	protected void setNextDay(JComboBox cd) {
 		// TODO Auto-generated method stub
 		String original = cd.getEditor().getItem().toString();
@@ -878,7 +903,6 @@ public class Launcher extends JFrame {
 		}
 
 	}
-
 
 	protected void statusSynch2Moodle(ActionEvent e) {
 		int dialogButton = JOptionPane.showConfirmDialog(null,

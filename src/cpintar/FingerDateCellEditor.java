@@ -95,7 +95,9 @@ public class FingerDateCellEditor extends DefaultCellEditor {
 //				
 				
 				// TODO ENTER after edit NOT changing valuesss .. BUT till back to the ori val
-				if(stvalue.toString().equalsIgnoreCase("Absent") ){
+				if(stvalue.toString().equalsIgnoreCase("Absent") |
+						stvalue.toString().equalsIgnoreCase("Excused") 
+						){
 					useComboBox=false;
 					jt.setText(value.toString()); //fix value may not be string
 					return jt;

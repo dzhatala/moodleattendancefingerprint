@@ -1,5 +1,8 @@
 Wed Dec  7 08:16:17 KST 2022
 
+-90 finger date populated only between 8.00-17.00 ?
+-70 TTS - mbrola
+	no id - use de , indo vs german .. 
 -60. ZKFPLoginDialog
 -50. old remarks 'finger at' different date overriden by 'not taken' 
 	11/jan 2024 override 10 jan 2024
@@ -11,7 +14,7 @@ Wed Dec  7 08:16:17 KST 2022
 	must based on name (first, middle,last) because username is used for login, so it isn't transferred via
 	json/webservice. only user id is transferred
 	
--10. create local Attendance/Session
+-10. create local Attendance/Session history (+cache statuses in mysql?) or JUST cache date?
 	connect ONCe to moodle , and cache structure to local backup ... 
 0. provide user a button (gui) for cancelling connection. Using asynchronous non blocking httpRespones ?
 	asynchronous 

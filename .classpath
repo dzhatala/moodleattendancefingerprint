@@ -19,5 +19,12 @@
 	<classpathentry kind="lib" path="G:/rsync/RESEARCHS/moodle/eclipse/javaws/moodle_att_https/libs/httpmime-4.3.2.jar"/>
 	<classpathentry kind="lib" path="G:/rsync/RESEARCHS/moodle/eclipse/javaws/moodle_att_https/libs/slf4j-api-1.7.36.jar"/>
 	<classpathentry kind="lib" path="libs/ZKFingerReader.jar"/>
+	<classpathentry kind="lib" path="libs/jfugue-5.0.9.jar"/>
+	<classpathentry kind="lib" path="libs/freetts-1.2.2-bin/freetts-1.2/lib/jsapi.jar"/>
+	<classpathentry kind="lib" path="libs/freetts-1.2.2-bin/freetts-1.2/lib/freetts.jar"/>
+	<classpathentry kind="lib" path="libs/freetts-1.2.2-bin/freetts-1.2/lib/en_us.jar"/>
+	<classpathentry kind="lib" path="libs/freetts-1.2.2-bin/freetts-1.2/lib/freetts-jsapi10.jar"/>
+	<classpathentry kind="lib" path="libs/freetts-1.2.2-bin/freetts-1.2/lib/cmu_us_kal.jar"/>
+	<classpathentry kind="lib" path="libs/freetts-1.2.2-bin/freetts-1.2/lib/mbrola_zoel.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

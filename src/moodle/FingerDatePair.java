@@ -1,15 +1,10 @@
 package moodle;
 
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.TimeZone;
 import java.util.Vector;
 import java.sql.Date;
-import java.sql.Timestamp;
-
-import javax.swing.WindowConstants;
 
 import cpintar.Launcher;
 
@@ -21,7 +16,7 @@ import cpintar.Launcher;
 
 public class FingerDatePair implements Cloneable {
 
-	Vector TSs = new Vector(); // TODO performance LIST <> ?
+	Vector<Long> TSs = new Vector<Long>(); // TODO performance LIST <> ?
 	// public String
 
 	// the date timestamp in long format GMT timestamp
@@ -123,13 +118,12 @@ public class FingerDatePair implements Cloneable {
 		this.lastName = lastName;
 	}
 
-	@SuppressWarnings("deprecation")
 	public String toString() {
 
 		// java.sql.Timestamp BUG
 		// if (timestamp != null)
 		// return timestamp.toLocaleString();
-		String ret=Launcher.dateFormatZone.format(new Date(getPRINT_TS()));
+		String ret = Launcher.dateFormatZone.format(new Date(getPRINT_TS()));
 		return ret;
 	}
 
@@ -158,7 +152,7 @@ public class FingerDatePair implements Cloneable {
 	public Long[] getTimeStamps() {
 		Object[] os = TSs.toArray();
 
-		Long []ret = new Long[os.length];
+		Long[] ret = new Long[os.length];
 		for (int i = 0; i < os.length; i++) {
 			ret[i] = (Long) os[i];
 		}
@@ -172,8 +166,8 @@ public class FingerDatePair implements Cloneable {
 
 		FingerDatePair ret = new FingerDatePair();
 
-		ret.printStatus=this.printStatus;
-		ret.remoteid=this.remoteid;
+		ret.printStatus = this.printStatus;
+		ret.remoteid = this.remoteid;
 		ret.firstName = this.firstName;
 		ret.lastName = this.lastName;
 		ret.localid = this.localid;
@@ -186,7 +180,7 @@ public class FingerDatePair implements Cloneable {
 	public void removeTimeStamp(Long long1) {
 		// TODO Auto-generated method stub
 		TSs.remove(long1);
-		
+
 	}
 
 }

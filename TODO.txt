@@ -1,5 +1,9 @@
 Wed Dec  7 08:16:17 KST 2022
 
+-100: auto install cacert from firefox
+	somehow download automaticall cert LIKE/SAME as in firefox
+	and put it in database see install_cert.bat
+	
 -90 finger date populated only between 8.00-17.00 ?
 -70 TTS - mbrola
 	no id - use de , indo vs german .. 

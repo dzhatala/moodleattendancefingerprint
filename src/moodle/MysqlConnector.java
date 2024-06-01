@@ -12,6 +12,9 @@ import com.borland.dx.sql.dataset.Database;
 import com.borland.dx.sql.dataset.Load;
 import com.borland.dx.sql.dataset.QueryDataSet;
 
+import cpintar.biometric.zkteco.NotConnectedException;
+import cpintar.tts.TTSReader;
+
 //import com.borland.dx.sql.dataset.;
 
 /**
@@ -270,12 +273,13 @@ public class MysqlConnector {
 	 * release current connection ...
 	 */
 	public void disconnect() {
+		if(qds!=null)
 		qds.close();
 		database.closeConnection();
 		Logger.log("MYSQL: disconnect");
 	}
 
-	public void connect() {
+	public void connect() throws Exception {
 		database.setConnection(mySQLDescriptor);
 		database.openConnection();
 		// database.sets
@@ -296,7 +300,7 @@ public class MysqlConnector {
 		if (FPID_C <= 0)
 			return null;
 		if (database.isOpen() == false)
-			throw new Exception("Connect() first");
+			throw new NotConnectedException("Connect() first");
 		System.out.println("get_mdl_user" + FPID_C);
 		String fp_q = "select fpinfo.*,mdl_user.id,mdl_user.remote_id, "
 				+ " mdl_user.username,mdl_user.firstname,   "

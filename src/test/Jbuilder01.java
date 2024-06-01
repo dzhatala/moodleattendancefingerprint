@@ -23,6 +23,8 @@ import java.awt.event.ActionEvent;
 
 import com.borland.dbswing.JdbNavToolBar;
 
+import cpintar.SessionJDBTable;
+
 import javax.swing.JScrollPane;
 
 public class Jbuilder01 extends JFrame {
@@ -136,7 +138,10 @@ public class Jbuilder01 extends JFrame {
 		scrollPane = new JScrollPane();
 		contentPane.add(scrollPane, BorderLayout.CENTER);
 
-		jdbTable1 = new JdbTable();
+//		jdbTable1 = new JdbTable();
+
+		jdbTable1 = new SessionJDBTable();
+
 		scrollPane.setViewportView(jdbTable1);
 	}
 

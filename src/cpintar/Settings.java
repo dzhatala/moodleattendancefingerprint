@@ -23,8 +23,16 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JPasswordField;
 import javax.swing.WindowConstants;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+
+import config.AccountConfig;
+
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
+import java.awt.event.InputMethodListener;
+import java.awt.event.InputMethodEvent;
+import javax.swing.JCheckBox;
 
 /**
  * MVC pattern .. detect in text fields ... JComboBox not listen to change in
@@ -41,9 +49,12 @@ public class Settings extends JDialog {
 	private static Settings _instance = null;
 
 	private MoodleWSURL[] WSurs = null;
-	private JComboBox comboBox;
+	private JComboBox<MoodleWSURL> comboBox;
 	private JTextField serviceName;
 	private JTextField profileName;
+	protected SettingsListener myListener = null;
+	private JButton btnSave;
+	private JButton btnUndo;
 
 	// TODO
 	// load everything from properties file
@@ -103,6 +114,7 @@ public class Settings extends JDialog {
 		panel_1.add(lblProfile, gbc_lblProfile);
 
 		comboBox = new JComboBox();
+		comboBox.setEnabled(false);
 		comboBox.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 				handleItemStateChanged(e);
@@ -116,6 +128,7 @@ public class Settings extends JDialog {
 		panel_1.add(comboBox, gbc_comboBox);
 
 		JButton btnNewButton = new JButton("New");
+		btnNewButton.setEnabled(false);
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				comboBox.addItem(new MoodleWSURL("new profile", "edit url",
@@ -138,6 +151,7 @@ public class Settings extends JDialog {
 		panel_1.add(lblNewLabel, gbc_lblNewLabel);
 
 		profileName = new JTextField();
+		profileName.setEnabled(false);
 		GridBagConstraints gbc_profileName = new GridBagConstraints();
 		gbc_profileName.insets = new Insets(0, 0, 5, 5);
 		gbc_profileName.fill = GridBagConstraints.HORIZONTAL;
@@ -155,6 +169,7 @@ public class Settings extends JDialog {
 		panel_1.add(Address, gbc_Address);
 
 		serviceName = new JTextField();
+		serviceName.setEnabled(false);
 		GridBagConstraints gbc_serviceName = new GridBagConstraints();
 		gbc_serviceName.insets = new Insets(0, 0, 5, 5);
 		gbc_serviceName.fill = GridBagConstraints.HORIZONTAL;
@@ -172,6 +187,8 @@ public class Settings extends JDialog {
 		panel_1.add(wsURL, gbc_wsURL);
 
 		hostname = new JTextField();
+		hostname.setEditable(false);
+		hostname.setEnabled(false);
 		GridBagConstraints gbc_hostname = new GridBagConstraints();
 		gbc_hostname.insets = new Insets(0, 0, 5, 5);
 		gbc_hostname.fill = GridBagConstraints.HORIZONTAL;
@@ -189,6 +206,30 @@ public class Settings extends JDialog {
 		panel_1.add(lblUsername, gbc_lblUsername);
 
 		username = new JTextField();
+		username.setText(AccountConfig.getUsername());
+		DocumentListener uplistener = new DocumentListener() {
+
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				// TODO Auto-generated method stub
+				change(e);
+			}
+
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				// TODO Auto-generated method stub
+				change(e);
+
+			}
+
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				// TODO Auto-generated method stub
+				change(e);
+
+			}
+
+		};
 		GridBagConstraints gbc_username = new GridBagConstraints();
 		gbc_username.insets = new Insets(0, 0, 5, 5);
 		gbc_username.fill = GridBagConstraints.HORIZONTAL;
@@ -206,12 +247,30 @@ public class Settings extends JDialog {
 		panel_1.add(lblPassword, gbc_lblPassword);
 
 		password = new JPasswordField();
+		password.setText(AccountConfig.getPassword());
 		GridBagConstraints gbc_password = new GridBagConstraints();
 		gbc_password.insets = new Insets(0, 0, 5, 5);
 		gbc_password.fill = GridBagConstraints.HORIZONTAL;
 		gbc_password.gridx = 2;
 		gbc_password.gridy = 5;
 		panel_1.add(password, gbc_password);
+
+		final JCheckBox chckbxShow = new JCheckBox("show");
+		final char asterix = password.getEchoChar();
+		chckbxShow.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (chckbxShow.isSelected()) {
+					password.setEchoChar((char) 0);
+				} else {
+					password.setEchoChar(asterix);
+				}
+			}
+		});
+		GridBagConstraints gbc_chckbxShow = new GridBagConstraints();
+		gbc_chckbxShow.insets = new Insets(0, 0, 5, 0);
+		gbc_chckbxShow.gridx = 3;
+		gbc_chckbxShow.gridy = 5;
+		panel_1.add(chckbxShow, gbc_chckbxShow);
 
 		JPanel panel_2 = new JPanel();
 		tabbedPane.addTab("Look", null, panel_2, null);
@@ -225,12 +284,19 @@ public class Settings extends JDialog {
 		JPanel panel = new JPanel();
 		getContentPane().add(panel, BorderLayout.SOUTH);
 
-		JButton btnSave = new JButton("Save");
+		btnSave = new JButton("Save");
+		btnSave.setEnabled(false);
 		btnSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				AccountConfig.setUsername(username.getText());
+				AccountConfig.setPassword(String.valueOf(password.getPassword()));
+				MoodleWSURL wsurl=(MoodleWSURL) comboBox.getSelectedItem();
+				wsurl.setUsername(username.getText());
+				wsurl.setPassword(String.valueOf(password.getPassword()));
+				btnSave.setEnabled(false);
+				btnUndo.setEnabled(false);
 			}
 		});
-		btnSave.setEnabled(false);
 		panel.add(btnSave);
 
 		JButton btnClose = new JButton("Close");
@@ -240,7 +306,49 @@ public class Settings extends JDialog {
 				;
 			}
 		});
+
+		btnUndo = new JButton("Undo");
+		btnUndo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+				username.setText(AccountConfig.getUsername());
+				password.setText(AccountConfig.getPassword());
+				btnSave.setEnabled(false);
+				btnUndo.setEnabled(false);
+			}
+		});
+		btnUndo.setEnabled(false);
+		panel.add(btnUndo);
 		panel.add(btnClose);
+		username.getDocument().addDocumentListener(uplistener);
+		password.getDocument().addDocumentListener(uplistener);
+		username.setText(AccountConfig.getUsername());
+		password.setText(AccountConfig.getPassword());
+	}
+
+	void change(DocumentEvent e) {
+		util.Logger.log("changed");
+		boolean iseq = username.getText().compareTo(
+				config.AccountConfig.getUsername()) == 0;
+		
+		iseq=iseq&password.getText().compareTo(
+				config.AccountConfig.getUsername()) == 0;
+		
+		if (!iseq) {
+			btnUndo.setEnabled(true);
+			btnSave.setEnabled(true);
+		} else {
+			btnUndo.setEnabled(false);
+			btnSave.setEnabled(false);
+
+		}
+		// util.Logger.log("change");
+
+	}
+
+	protected void log(String string) {
+		// TODO Auto-generated method stub
+		util.Logger.log("username changed");
 	}
 
 	protected void handleItemStateChanged(ItemEvent e) {
@@ -276,12 +384,14 @@ public class Settings extends JDialog {
 		m.setPassword("007");
 		test[0] = m;
 		m = new MoodleWSURL("yoga", "http://127.0.0.1/moodle", "fp_yoga");
-		m.setUsername("007");
-		m.setPassword("007");
+		// m.setUsername("007");
+		m.setUsername(AccountConfig.getUsername());
+		m.setPassword(AccountConfig.getPassword());
 		test[1] = m;
 
 		JFrame f = new JFrame("tst");
 		Settings s = new Settings(f, test);
+		s.username.setText(m.getUsername());
 		f.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		f.setLocationRelativeTo(null);
 		JButton j = new JButton("show");
@@ -296,7 +406,9 @@ public class Settings extends JDialog {
 			}
 		});
 		f.getContentPane().add(j);
-		f.pack();
+//		f.pack();
+		f.setSize(100,200);
+
 		f.setVisible(true);
 
 	}

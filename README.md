@@ -7,3 +7,11 @@ mysql is filled by fingerprint library  for example:
 
 
 https://github.com/dzhatala/zk4500biotime
+
+
+audiot forensic:
+	= sometime we need to leave the fingering process without inspecting ..
+	  in this case use Audio recording to record the sound for later forensic auditing when
+	   students complain.
+	   
+	   

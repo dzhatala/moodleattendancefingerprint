@@ -15,7 +15,6 @@ import javax.swing.event.TableModelListener;
 
 import com.borland.dbswing.JdbTable;
 
-import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -25,9 +24,12 @@ import javax.swing.tree.TreePath;
 import com.borland.dx.sql.dataset.Database;
 import com.borland.dx.sql.dataset.ConnectionDescriptor;
 
+import config.AccountConfig;
+import config.SessionTableConfig;
+import cpintar.biometric.BioScanListener;
+import cpintar.biometric.ScanEvent;
 import cpintar.biometric.zkteco.ZKFPBioManager;
 
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -36,8 +38,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.JTree;
+import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.JSplitPane;
 
@@ -52,6 +54,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.net.ProtocolException;
 import java.net.UnknownHostException;
@@ -59,6 +62,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 import java.util.Vector;
@@ -80,7 +84,7 @@ import javax.swing.JMenu;
  * 
  */
 
-public class Launcher extends JFrame {
+public class Launcher extends JFrame implements MouseListener, BioScanListener {
 
 	// connection profile
 	private Vector<MoodleWSURL> moodleWSURLs = new Vector();
@@ -176,11 +180,11 @@ public class Launcher extends JFrame {
 		MoodleWSURL m = new MoodleWSURL("cpintar",
 				"https://cs.cepatpintar.biz.id/moodle", "fp_cepatpintar");
 		moodleWSURLs.add(m);
-		m.setUsername("007");
-		m.setPassword("007");
+		m.setUsername(AccountConfig.getUsername());
+		m.setPassword(AccountConfig.getPassword());
 		m = new MoodleWSURL("yoga", "http://127.0.0.1/moodle", "fp_yoga");
-		m.setUsername("007");
-		m.setPassword("007");
+		m.setUsername(AccountConfig.getUsername());
+		m.setPassword(AccountConfig.getPassword());
 		moodleWSURLs.add(m);
 
 		renderConnProfiles(moodleWSURLs);
@@ -211,7 +215,13 @@ public class Launcher extends JFrame {
 			public void mouseClicked(MouseEvent me) {
 				courseTreeMouseClicked(me);
 			}
-		});
+
+		}
+
+		);
+
+		// TODO sometime shadowed ? NOT RECEIVED
+		userSessionTable.addMouseListener(this);
 
 		// userSessionTable.get
 
@@ -333,9 +343,9 @@ public class Launcher extends JFrame {
 	private JButton btnUndoChange;
 	private DefaultMutableTreeNode activeSessionNode;
 	private JComboBox moodleURL;
-	private int FINGER_HOUR_END_DAY = 19; // TODO profile GUI editor for late
+	private int FINGER_HOUR_END_DAY = 21; // TODO profile GUI editor for late
 											// tolerance for finger taking..
-	private int FINGER_HOUR_BEGIN_DAY = 5; // 24 hour end of the day
+	private int FINGER_HOUR_BEGIN_DAY = 4; // 24 hour end of the day
 	private JLabel lblCourse;
 	private JLabel lblDate;
 	private JLabel lblFinger;
@@ -416,6 +426,20 @@ public class Launcher extends JFrame {
 		userSessionTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		userSessionTable.setAutoResizeMode(JTable.AUTO_RESIZE_NEXT_COLUMN);
 		userSessionTable.setModel(tableModel);
+		Enumeration<TableColumn> tce = userSessionTable.getColumnModel()
+				.getColumns();
+		if (userSessionTable.getColumnCount() > 2)
+			while (tce.hasMoreElements()) {
+				TableColumn tc = tce.nextElement();
+				// System.out.println("sjdbt "+tc.getHeaderValue()+" width: " +
+				// tc.getWidth());
+				int width = SessionTableConfig.getWidth(tc.getHeaderValue()
+						.toString());
+				util.Logger.log("laucnher set width " + tc.getHeaderValue()
+						+ "<=" + width);
+				tc.setPreferredWidth(width);
+				tc.setWidth(width);
+			} /* On mouse release, check if column width has changed */
 
 		// WrapCellRenderer wcr=new WrapCellRenderer();
 		TableColumnModel cm = userSessionTable.getColumnModel();
@@ -433,20 +457,6 @@ public class Launcher extends JFrame {
 				tableModel);
 
 		userSessionTable.setDefaultRenderer(Object.class, rdr);
-		userSessionTable.addMouseListener(new MouseAdapter() {
-			public void mouseClicked(MouseEvent me) {
-				if (me.getClickCount() == 2) { // to detect doble click events
-					JTable target = (JTable) me.getSource();
-					int row = target.getSelectedRow(); // select a row
-					int column = target.getSelectedColumn(); // select a column
-					// JOptionPane.showMessageDialog(null,
-					// userSessionTable.getValueAt(row, column)); // get the
-					// value of a row and column.
-					handleRow2Clicked(row, column, userSessionTable);
-				}
-			}
-		});
-
 		edtr = new StatusCellEditor(sess.detail.statuses);
 		edtr.addCellEditorListener(new CellEditorListener() {
 
@@ -571,7 +581,7 @@ public class Launcher extends JFrame {
 	 * Create the frame.
 	 */
 	public Launcher() {
-		setTitle("Student Attendance");
+		updateTitle();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 1048, 736);
 
@@ -617,6 +627,7 @@ public class Launcher extends JFrame {
 		lblServer.setFont(new Font("Tahoma", Font.PLAIN, 18));
 
 		moodleURL = new JComboBox();
+		moodleURL.setEnabled(false);
 		panel.add(moodleURL);
 		moodleURL.setFont(new Font("Tahoma", Font.PLAIN, 20));
 
@@ -704,7 +715,7 @@ public class Launcher extends JFrame {
 		lblFinger.setFont(new Font("Tahoma", Font.PLAIN, 19));
 		infoPanel.add(lblFinger);
 
-		userSessionTable = new JdbTable();
+		userSessionTable = new SessionJDBTable();
 		userSessionTable.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		// studentPanel.add(userSessionTable);
 
@@ -759,12 +770,26 @@ public class Launcher extends JFrame {
 		contentPane.add(scrollPane, BorderLayout.WEST);
 	}
 
+	private void updateTitle() {
+		// TODO Auto-generated method stub
+		setTitle("KALESANG (" + AccountConfig.getUsername() + ")");
+
+	}
+
 	protected void openZKFPBioDevice(ActionEvent e) {
 		// TODO Auto-generated method stub
 
-		if(zkBioMgr==null)
-		zkBioMgr=new ZKFPBioManager();
+		// if (zkBioMgr == null) {
+		// zkBioMgr = new ZKFPBioManager();
+		if (zkBioMgr != null) {
+			zkBioMgr.disconectAll();
+			zkBioMgr.dispose();
+			zkBioMgr = null;
+		}
+		zkBioMgr = new ZKFPBioManager(SwingUtilities.windowForComponent(this));
+		// }
 		zkBioMgr.removeAllBioScanListener();
+		zkBioMgr.addBioScanListener(this);
 		MysqlConnector mc = new MysqlConnector();
 		ConnectionDescriptor desc = new ConnectionDescriptor(
 				"jdbc:mysql://localhost:3306/absensi", "root", "", false,
@@ -772,6 +797,7 @@ public class Launcher extends JFrame {
 		mc.setMySQLDescriptor(desc);
 		zkBioMgr.setMySQLConnector(mc);
 		zkBioMgr.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		zkBioMgr.setModal(true);
 		zkBioMgr.setVisible(true);
 
 	}
@@ -798,6 +824,7 @@ public class Launcher extends JFrame {
 		// showing settings dialog
 		// sets.pack();
 		sets.setVisible(true);
+		updateTitle();
 
 	}
 
@@ -939,6 +966,8 @@ public class Launcher extends JFrame {
 			String remarks = null;
 			Object fingerVal = tableModel.getValueAt(i,
 					tableModel.COL_FINGERDATE);
+			if (fingerVal != null)
+				remarks = fingerVal.toString();
 			if (fingerVal != null)
 				if (fingerVal instanceof FingerDatePair) {
 					remarks = "finger at: "
@@ -1266,4 +1295,65 @@ public class Launcher extends JFrame {
 	protected JLabel getLblFinger() {
 		return lblFinger;
 	}
+
+	// listeners
+
+	public void mouseClicked(MouseEvent me) {
+		util.Logger.log("mouse Clicked");
+		if (me.getClickCount() == 2) { // to detect doble click events
+			JTable target = (JTable) me.getSource();
+			int row = target.getSelectedRow(); // select a row
+			int column = target.getSelectedColumn(); // select a column
+			// JOptionPane.showMessageDialog(null,
+			// userSessionTable.getValueAt(row, column)); // get the
+			// value of a row and column.
+			handleRow2Clicked(row, column, userSessionTable);
+		}
+
+	}
+
+	public void mouseReleased(MouseEvent me) {
+		util.Logger.log("launcher mouse released");
+
+		Enumeration<TableColumn> tce = userSessionTable.getColumnModel()
+				.getColumns();
+
+		while (tce.hasMoreElements()) {
+			TableColumn tc = tce.nextElement();
+			// System.out.println("launcher width: " + tc.getWidth());
+
+		}
+	}
+
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		// util.Logger.log("launcher mouse 2");
+
+	}
+
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		// util.Logger.log("launcher mouse 1");
+
+	}
+
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		// util.Logger.log("launcher mouse 3");
+
+	}
+
+	@Override
+	public void BioScanSucccess(ScanEvent ev) {
+		// TODO BAD performance here, should only refresh changed rows
+		util.Logger.log("launcher: BioScanSucccess");
+		showSession(activeSessionNode);
+	}
+
+	@Override
+	public void BioScanFailed(ScanEvent ev) {
+		// TODO Auto-generated method stub
+
+	}
+
 }

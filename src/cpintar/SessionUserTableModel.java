@@ -15,7 +15,8 @@ import json.AttendanceStudentInfo;
 import json.SessionDetail;
 
 /**
- *  // TODO, reload model only ... 
+ * // TODO, reload model only ...
+ * 
  * @author zh
  * 
  */
@@ -299,7 +300,7 @@ public class SessionUserTableModel extends DefaultTableModel {
 	}
 
 	/**
-	 * which row has status changed ? can be used to synch to moodle server
+	 * which row has status changed to be synched to moodle server
 	 * 
 	 * @return true if changed AND valid....
 	 */

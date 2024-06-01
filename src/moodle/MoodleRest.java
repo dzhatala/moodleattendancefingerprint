@@ -37,6 +37,8 @@ import com.ning.http.client.AsyncHttpClient;
 import com.ning.http.client.AsyncHttpClient.BoundRequestBuilder;
 import com.ning.http.client.Response;
 
+import config.AccountConfig;
+
 public class MoodleRest {
 
 	String moodleURL = "http://127.0.0.1/moodle";
@@ -816,9 +818,14 @@ public class MoodleRest {
 		MoodleRest restConnector = new MoodleRest(
 				"https://cs.cepatpintar.biz.id/moodle");
 		// restConnector.setMoodleURL(moodleURL.getText());
-		restConnector.setUsername("007");// TODO ask user input
-		restConnector.setPassword("007"); // TODO ask user input
+		
+//		restConnector.setUsername("007");// TODO ask user input
+//		restConnector.setPassword("007"); // TODO ask user input
 
+		restConnector.setUsername(AccountConfig.getUsername());// TODO ask user input
+		restConnector.setPassword(AccountConfig.getPassword()); // TODO ask user input
+
+		
 		Token t = restConnector.asyncGetToken(null, null, "fp_cepatpintar");
 
 		if (restConnector.lastToken == null) {
@@ -841,6 +848,9 @@ public class MoodleRest {
 		// main2(args);
 		// testTokenCP();
 		// testAsynchTokenCP();
+//		System.out.println("Username: "+AccountConfig.getUsername());
+//		System.out.println("Password: "+AccountConfig.getPassword());
+		
 		testAsync01(args);
 
 	}

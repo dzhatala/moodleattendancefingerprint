@@ -4,12 +4,12 @@
 
 
 @rem NO NEED ? echo you must running java InstallCert first
-@set jre_bin=e:\master\java\jdk1.8.0_40\jre\bin
+@set jre_bin=G:\rps\eclipse-java-kepler-SR1-win32-x86_64\jdk1.8.0_40\jre\bin
 
 
 @rem TARGET JVM 
 set var_keys=jssecacerts
-set var_keys=E:\master\java\jdk1.8.0_40\jre\lib\security\cacerts
+set var_keys=G:\rps\eclipse-java-kepler-SR1-win32-x86_64\jdk1.8.0_40\jre\lib\security\cacerts
 
 set var_alias=cs.cepatpintar.biz.id-1
 

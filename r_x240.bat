@@ -15,5 +15,5 @@ set cp_cp=%cp_cp%;libs\jfugue-5.0.9.jar
 @set cp_cp=%cp_cp%;F:\rsync\RESEARCHS\text_recognition_ocr_dns_scan\tesseract_win\tess4j_01\jar_files\slf4j-api-1.7.36.jar;
 
 @rem call e:\master\java\jdk1.8.0_40\jre\bin\java -cp %cp_cp% cpintar.Launcher
-SET JAVA_BIN=J:\master\java\jdk1.8.0_40\jre\bin\java
+SET JAVA_BIN=G:\rps\eclipse-java-kepler-SR1-win32-x86_64\jdk1.8.0_40\jre\bin\java
 call  %JAVA_BIN% -cp %cp_cp% cpintar.Launcher

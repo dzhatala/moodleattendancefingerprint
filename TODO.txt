@@ -29,4 +29,5 @@ Wed Dec  7 08:16:17 KST 2022
 500. earlier 'before start'  time shadowing  correct time, 21/22/2022 pbo elsa nania agustina
 	-Launcher.autosetPresent
 	-SessionUsertablemode initValues()
-600. 
+600. sfsa
+

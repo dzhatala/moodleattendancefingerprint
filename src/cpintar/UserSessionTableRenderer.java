@@ -22,7 +22,7 @@ public class UserSessionTableRenderer extends DefaultTableCellRenderer {
 	public UserSessionTableRenderer(SessionUserTableModel tableModel) {
 		// TODO Auto-generated constructor stub
 		this.tableModel = tableModel;
-		
+
 	}
 
 	// StatusRenderer stRdr=new StatusRenderer();
@@ -32,19 +32,35 @@ public class UserSessionTableRenderer extends DefaultTableCellRenderer {
 		Component c = super.getTableCellRendererComponent(table, value,
 				isSelected, hasFocus, row, col);
 
-//		JTextArea c=new JTextArea();
-//		if(value!=null)
-//		c.setText(value.toString());
-//		c.setLineWrap(true);
-//		c.setWrapStyleWord(true);
-//		c.setFont(cold.getFont());
-//		
-		Color col_orig = c.getForeground();
+		// JTextArea c=new JTextArea();
+		// if(value!=null)
+		// c.setText(value.toString());
+		// c.setLineWrap(true);
+		// c.setWrapStyleWord(true);
+		// c.setFont(cold.getFont());
+		//
+		String status = tableModel.getValueAt(row,
+				SessionUserTableModel.COL_STATUS) + "";
+		// util.Logger.log(this,"status description: "+status);
+		if (status.trim().equalsIgnoreCase("Absent")) {
 
-		if (this.tableModel.getStatusInfos()==null)c.setForeground(Color.RED);
+			c.setForeground(Color.RED);
+			return c;
+		}
+
+		if (status.trim().equalsIgnoreCase("Present")) {
+
+			c.setForeground(Color.BLACK);
+			return c;
+		}
+
+
+		if (this.tableModel.getStatusInfos() == null)
+			c.setForeground(Color.RED);
 		if (this.tableModel.getFingerPair(row) == null) {
 			c.setForeground(Color.RED);
 		} else {
+
 			FingerDatePair fdp = tableModel.getFingerPair(row);
 			String rfName = tableModel
 					.getValueAt(row, SessionUserTableModel.COL_FIRSTNAME)
@@ -62,8 +78,11 @@ public class UserSessionTableRenderer extends DefaultTableCellRenderer {
 			}
 		}
 
-		
 		return c;
+	}
+	
+	public String toString(){
+		return this.getClass().toString();
 	}
 
 }

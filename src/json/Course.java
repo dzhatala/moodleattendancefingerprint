@@ -1,8 +1,8 @@
 package json;
 
 public class Course {
-	public String shortname;
-	public String fullname;
+	public String shortname="UNK";
+	public String fullname="UNK";
 
 	public AttendanceInstance[] attendance_instances;
 

@@ -8,8 +8,8 @@ import java.util.Vector;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
+import db.RemotePair;
 import moodle.FingerDatePair;
-import moodle.RemotePair;
 import json.AttendanceStatusInfo;
 import json.AttendanceStudentInfo;
 import json.SessionDetail;
@@ -195,6 +195,21 @@ public class SessionUserTableModel extends DefaultTableModel {
 						// return _detail.users[row - 1].lastname;
 					case COL_FINGERDATE:
 
+						
+						
+						key = _detail.users[row - 1].id + "";
+						o = studentId2log.get(key);
+						AttendanceStudentInfo studinfo = (AttendanceStudentInfo) o;
+						if(studinfo!=null){
+							return studinfo.remarks;
+						}
+						/*
+						String statusDesc=AttendanceStatusInfo.ID2Description(_detail.statuses, Integer.parseInt(studinfo.id));
+						if(statusDesc.equalsIgnoreCase("Absent")) return studinfo.remarks;
+						if(statusDesc.equalsIgnoreCase("Late")) return studinfo.remarks;
+						*/
+						
+						
 						key = _detail.users[row - 1].id + "";
 						// System.out.println("initvalues local to get: #" + key
 						// + "#");
@@ -404,4 +419,10 @@ public class SessionUserTableModel extends DefaultTableModel {
 		return _detail;
 	}
 
+	/**
+	 * for simple logging ?
+	 */
+	public String toString(){
+		return ""+this.getClass()+"@"+this.hashCode();
+	}
 }

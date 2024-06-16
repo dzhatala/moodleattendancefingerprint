@@ -1,4 +1,4 @@
-package moodle;
+package db;
 
 public class RemotePair {
 	long local=-1;

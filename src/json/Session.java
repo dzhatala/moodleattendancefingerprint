@@ -6,16 +6,16 @@ import java.util.Date;
 import moodle.Utils;
 
 public class Session {
-	public int id;
-	int attendanceid;
-	int groupid;
-	long sessdate; // unix timestamp in seconds, for moodle server time ..
-	int duration;
-	long lastaken;
-	int lasttakenby;
-	long timemodified;
-	int studentscanmark;
-	String statusset;
+	public long id;
+	public int attendanceid;
+	public int groupid;
+	public long sessdate; // unix timestamp in seconds, for moodle server time ..
+	public int duration;
+	public long lastaken;
+	public int lasttakenby;
+	public long timemodified;
+	public int studentscanmark;
+	public String statusset;
 	public SessionDetail detail; // need another REST CALL to be filled
 	static SimpleDateFormat dateFormat = new SimpleDateFormat(
 			"dd/MM/yyyy HH:mm");

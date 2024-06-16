@@ -1,5 +1,7 @@
 package cpintar;
 
+import i18n.LL;
+
 import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -19,6 +21,7 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 import com.borland.dx.sql.dataset.Database;
@@ -29,6 +32,8 @@ import config.SessionTableConfig;
 import cpintar.biometric.BioScanListener;
 import cpintar.biometric.ScanEvent;
 import cpintar.biometric.zkteco.ZKFPBioManager;
+import db.MysqlConnector;
+import db.RemotePair;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -45,8 +50,6 @@ import javax.swing.JSplitPane;
 
 import moodle.FingerDatePair;
 import moodle.MoodleRest;
-import moodle.MysqlConnector;
-import moodle.RemotePair;
 import moodle.Utils;
 
 import java.awt.Font;
@@ -58,6 +61,7 @@ import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.net.ProtocolException;
 import java.net.UnknownHostException;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -108,7 +112,7 @@ public class Launcher extends JFrame implements MouseListener, BioScanListener {
 	private JSplitPane splitPane;
 	MoodleRest restConnector = new MoodleRest("http://127.0.0.1/moodle"); // localhost
 
-	MysqlConnector mysqlConnector = null;
+	MysqlConnector mysqlConnector = new MysqlConnector();
 
 	private JPanel studentPanel;
 	private JdbTable userSessionTable;
@@ -130,6 +134,7 @@ public class Launcher extends JFrame implements MouseListener, BioScanListener {
 					TimeZone.setDefault(zone);
 					dateFormatZone.setTimeZone(zone);
 					Launcher frame = new Launcher();
+					frame.loadCachedDates();
 					frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 					JScrollPane scP = frame.getScrollPane();
 					frame.getScrollPane().setViewportView(frame.courseTree);
@@ -144,6 +149,8 @@ public class Launcher extends JFrame implements MouseListener, BioScanListener {
 					frame.initMenu();
 					frame.pack(); // centering
 					frame.setLocationRelativeTo(null);
+					// util.Logger.log(frame.courseTree.getCellRenderer());
+					frame.initGUI();
 					frame.setVisible(true);
 				} catch (Exception e) {
 
@@ -155,9 +162,38 @@ public class Launcher extends JFrame implements MouseListener, BioScanListener {
 
 	}
 
+	protected void initGUI() {
+		// TODO Auto-generated method stub
+		courseTree.setCellRenderer(new CourseTreeRenderer());
+	}
+
+	protected void loadCachedDates() {
+		// TODO Auto-generated method stub
+		AccountConfig ac = AccountConfig.getInstance();
+		String remoteid = ac.getUsername();
+		CachedDate[] dates = mysqlConnector.getTeachersDatesCached(remoteid);
+		if (dates != null)
+			for (CachedDate d : dates) {
+				Course c = new Course();
+				c.fullname = d.getCoursefullname();
+				c.shortname = d.courseshortname;
+				root.addCourse(c, d);
+			}
+		// Course c = new Course();
+		// root.addCourse(c, new Date());
+
+		// DefaultMutableTreeNode currentNode = root;
+		this.courseTree.expandPath(new TreePath(root.getPath()));
+		/*
+		 * do { if (currentNode.getLevel() == 0) this.courseTree.expandPath(new
+		 * TreePath(currentNode.getPath())); currentNode =
+		 * currentNode.getNextNode(); } while (currentNode != null);
+		 */
+	}
+
 	protected void initMenu() {
 		// TODO Auto-generated method stub
-		System.out.println("Initialize menu");
+		// System.out.println("Initialize menu");
 	}
 
 	// TODO bigger font ?
@@ -237,11 +273,11 @@ public class Launcher extends JFrame implements MouseListener, BioScanListener {
 		DefaultMutableTreeNode node = null;
 		if (tp != null) {
 
-			System.out.println(tp.getLastPathComponent().getClass());
+			// System.out.println(tp.getLastPathComponent().getClass());
 			node = (DefaultMutableTreeNode) tp.getLastPathComponent();
 			obj = node.getUserObject();
 		} else {
-			System.out.println("no tree path ");
+			// System.out.println("no tree path ");
 			return; //
 		}
 		int btnNumber = me.getButton();
@@ -258,7 +294,7 @@ public class Launcher extends JFrame implements MouseListener, BioScanListener {
 			// System.out.println(node.getUserObject().getClass());
 			break;
 		case RIGHT_CLICK_EVENT:
-			System.out.println("Right click");
+			// System.out.println("Right click");
 			showPopUpMenu(me, tp, node, obj);
 			break;
 		default:
@@ -270,6 +306,31 @@ public class Launcher extends JFrame implements MouseListener, BioScanListener {
 	private void showPopUpMenu(MouseEvent me, TreePath tp,
 			final DefaultMutableTreeNode node, final Object obj) {
 		// TODO Auto-generated method stub
+
+		if (obj != null && obj instanceof Date) {
+
+			JPopupMenu popup = new JPopupMenu();
+			ActionListener menuListener = new ActionListener() {
+				public void actionPerformed(ActionEvent event) {
+					// System.out.println("Popup menu item ["
+					// + event.getActionCommand() + "] was pressed.");
+					String ac = event.getActionCommand();
+					if (ac.equalsIgnoreCase(LL.TR("Delete Date"))) {
+						util.Logger.log("delete date " + node.getUserObject());
+						courseDeleteDate(node, (Date) obj);
+					}
+				}
+			};
+
+			JMenuItem item;
+			popup.add(item = new JMenuItem(LL.TR("Delete Date")));
+			item.setHorizontalTextPosition(JMenuItem.RIGHT);
+			item.addActionListener(menuListener);
+			popup.setLabel("Justification");
+			popup.show(this, me.getX(), me.getY());
+
+		}
+
 		if (obj != null && obj instanceof Session) {
 
 			JPopupMenu popup = new JPopupMenu();
@@ -314,6 +375,47 @@ public class Launcher extends JFrame implements MouseListener, BioScanListener {
 	}
 
 	/**
+	 * 
+	 * @param node
+	 * @param obj
+	 * @throws SQLException
+	 */
+	protected void courseDeleteDate(DefaultMutableTreeNode node, Date obj) {
+		// TODO Auto-generated method stub
+		if (node == null || obj == null)
+			return;
+		Object o = node.getUserObject();
+
+		if (!(o instanceof CachedDate)) {
+			util.Logger.log("try to remove non date: " + o.getClass());
+			return;
+		}
+
+		int cnt = node.getChildCount();
+		/*
+		 * for(int i=0; i<cnt; i++){ DefaultMutableTreeNode
+		 * courseN=(DefaultMutableTreeNode)node.getChildAt(i); Object
+		 * co=courseN.getUserObject(); if(!(co instanceof Course)){
+		 * util.Logger.log("\tnon course : "+co.getClass());
+		 * 
+		 * continue; } root.removeCourse((Course)co); }
+		 */
+
+		root.deleteCachedDate(node);
+		DefaultTreeModel courseTreeNode = (DefaultTreeModel) courseTree
+				.getModel();
+		try {
+			mysqlConnector.deleteTeachersDatesCached(
+					AccountConfig.getUsername(), (Date) o);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		courseTreeNode.reload(root);
+		// util.Logger.log("remoing "+o);
+	}
+
+	/**
 	 * reload session
 	 * 
 	 * @param node
@@ -321,7 +423,7 @@ public class Launcher extends JFrame implements MouseListener, BioScanListener {
 	 */
 	protected void reloadSession(DefaultMutableTreeNode node, Session sess) {
 		// TODO Auto-generated method stub
-		int sessId = sess.id;
+		// long sessId = sess.id;
 		// sess.detail=restConnector.asynchGetSessionDetail(sessId);
 		sess.detail = restConnector.getSessionDetail(sess);
 		if (sess.detail != null) {
@@ -368,8 +470,9 @@ public class Launcher extends JFrame implements MouseListener, BioScanListener {
 	 */
 	private void showSession(DefaultMutableTreeNode sessionNode) {
 		// TODO Auto-generated method stub
+		if(sessionNode==null)return ;
 		Session sess = (Session) sessionNode.getUserObject();
-		System.out.println("showing session: " + sess);
+		// System.out.println("showing session: " + sess);
 
 		RemotePair[] rlPairs = null;
 		try {
@@ -417,7 +520,7 @@ public class Launcher extends JFrame implements MouseListener, BioScanListener {
 			@Override
 			public void tableChanged(TableModelEvent e) {
 				// TODO Auto-generated method stub
-				System.out.println("MainFr : table changed, " + e);
+				// System.out.println("MainFr : table changed, " + e);
 				handleTableModelChangedEvent(e);
 			}
 
@@ -531,7 +634,7 @@ public class Launcher extends JFrame implements MouseListener, BioScanListener {
 	protected void handleRow2Clicked(int row, int column,
 			JdbTable userSessionTable2) {
 		// TODO Auto-generated method stub
-		System.out.println("LogDetail ..");
+		// System.out.println("LogDetail ..");
 		LogDetail log = new LogDetail(this, row, tableModel);
 		// log.setSize(300, 200);
 		log.setVisible(true);
@@ -772,9 +875,15 @@ public class Launcher extends JFrame implements MouseListener, BioScanListener {
 
 	private void updateTitle() {
 		// TODO Auto-generated method stub
-		setTitle("KALESANG (" + AccountConfig.getUsername() + ")");
+		AccountConfig ac = AccountConfig.getInstance();
+		setTitle("KALESANG (" + ac.getUsername() + ")");
 
 	}
+
+	// TODO : fix to be put in Preferences
+	// ConnectionDescriptor desc = new ConnectionDescriptor(
+	// "jdbc:mysql://localhost:3306/absensi", "root", "", false,
+	// "com.mysql.jdbc.Driver"); // TODO profile GUI editor
 
 	protected void openZKFPBioDevice(ActionEvent e) {
 		// TODO Auto-generated method stub
@@ -790,14 +899,14 @@ public class Launcher extends JFrame implements MouseListener, BioScanListener {
 		// }
 		zkBioMgr.removeAllBioScanListener();
 		zkBioMgr.addBioScanListener(this);
-		MysqlConnector mc = new MysqlConnector();
-		ConnectionDescriptor desc = new ConnectionDescriptor(
-				"jdbc:mysql://localhost:3306/absensi", "root", "", false,
-				"com.mysql.jdbc.Driver"); // TODO profile GUI editor
-		mc.setMySQLDescriptor(desc);
-		zkBioMgr.setMySQLConnector(mc);
+		// MysqlConnector mc = new MysqlConnector();
+		// mc.setMySQLDescriptor(desc);
+		mysqlConnector.setMySQLDescriptor(mysqlDescriptor);
+		// zkBioMgr.setMySQLConnector(mc);
+		zkBioMgr.setMySQLConnector(mysqlConnector);
 		zkBioMgr.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		zkBioMgr.setModal(true);
+		zkBioMgr.gotoPreferLocation();
 		zkBioMgr.setVisible(true);
 
 	}
@@ -949,9 +1058,9 @@ public class Launcher extends JFrame implements MouseListener, BioScanListener {
 		// final String st=sess.
 		// this.tableModel.gets
 		for (int i = 0; i < rcnt; i++) {
-			System.out.println("row " + i + " "
-					+ tableModel.getValueAt(i, tableModel.COL_FIRSTNAME)
-					+ " : isStChngd? " + tableModel.isStatusChanged(i));
+			// System.out.println("row " + i + " "
+			// + tableModel.getValueAt(i, tableModel.COL_FIRSTNAME)
+			// + " : isStChngd? " + tableModel.isStatusChanged(i));
 			final String studentid = tableModel.getValueAt(i,
 					tableModel.COL_REMOTEID) + "";
 			final Object cs = tableModel.getValueAt(i, tableModel.COL_STATUS);
@@ -1037,8 +1146,8 @@ public class Launcher extends JFrame implements MouseListener, BioScanListener {
 					SessionUserTableModel.COL_STATUS).toString();
 			Object tmp = tableModel.getValueAt(i,
 					SessionUserTableModel.COL_FINGERDATE);
-			System.out.println("r " + i + " fingerdate:" + tmp + ", class:"
-					+ tmp.getClass());
+			// System.out.println("r " + i + " fingerdate:" + tmp + ", class:"
+			// + tmp.getClass());
 			if (!status.toString().equalsIgnoreCase("Present")) {
 				if (!isAll) {
 					System.out.println("autoSpr isAll = " + isAll);
@@ -1100,7 +1209,8 @@ public class Launcher extends JFrame implements MouseListener, BioScanListener {
 
 	void connectAndRefreshTree() {
 		int dialogButton = JOptionPane.showConfirmDialog(null,
-				"Connect server?", "Confirm", JOptionPane.YES_NO_OPTION);
+				LL.TR("Get Data From server?"), LL.TR("Confirm"),
+				JOptionPane.YES_NO_OPTION);
 
 		if (dialogButton == JOptionPane.YES_OPTION) {
 			if (tableModel != null)
@@ -1135,6 +1245,19 @@ public class Launcher extends JFrame implements MouseListener, BioScanListener {
 					// Date
 					// d=dateFormat.parse(courseDate.getItemAt(0).toString());//same
 					// formatter is used for Jcombobox
+					// desc.getUserName();
+
+					/*
+					 * Session[] caches = mysqlConnector
+					 * .loadSessionCaches(restConnector .getMoodleUsername());
+					 * if (caches != null) { util.Logger.log(this,
+					 * " sess cache found: " + caches.length); for (int id = 0;
+					 * id < caches.length; id++) { root.addDateRoot(new Date(
+					 * caches[id].sessdate * 1000)); }
+					 * 
+					 * }
+					 */
+
 					final Date d = dateFormat.parse(courseDate.getEditor()
 							.getItem().toString());// same formatter is used for
 													// Jcombobox
@@ -1191,6 +1314,7 @@ public class Launcher extends JFrame implements MouseListener, BioScanListener {
 					for (int i = 0; i < courses.length; i++) {
 						DefaultMutableTreeNode courseNode = root.addCourse(
 								courses[i], d);
+
 						AttendanceInstance[] atts = courses[i]
 								.getAttendance_instances();
 
@@ -1200,15 +1324,31 @@ public class Launcher extends JFrame implements MouseListener, BioScanListener {
 							Session[] sess = atts[J].today_sessions;
 							for (int K = 0; K < sess.length; K++) {
 								attN.add(new DefaultMutableTreeNode(sess[K]));
+								// if(mysqlConnector=null)conn
+								mysqlConnector
+										.setMySQLDescriptor(mysqlDescriptor); // FIX
+								// :
+								// is
+								// updated
+								// ?
+								/*
+								 * mysqlConnector.addTeachersSessionCache(
+								 * restConnector.getMoodleUsername(), sess[K]);
+								 */
 							}
 
 						}
 
 					}
-
-					DefaultTreeModel courseTreeNode = (DefaultTreeModel) courseTree
+					if (courses.length > 0) {
+						CachedDate cd = new CachedDate();
+						cd.setTime(d.getTime());
+						mysqlConnector.addTeachersDatesCached(
+								restConnector.getMoodleUsername(), cd);
+					}
+					DefaultTreeModel ctModel = (DefaultTreeModel) courseTree
 							.getModel();
-					courseTreeNode.reload(root);
+					ctModel.reload(root);
 					// userSessionTable.setModel(null);
 
 					// .setVisible(true);
@@ -1313,7 +1453,7 @@ public class Launcher extends JFrame implements MouseListener, BioScanListener {
 	}
 
 	public void mouseReleased(MouseEvent me) {
-		util.Logger.log("launcher mouse released");
+		util.Logger.log(this, "launcher mouse released");
 
 		Enumeration<TableColumn> tce = userSessionTable.getColumnModel()
 				.getColumns();
@@ -1346,7 +1486,7 @@ public class Launcher extends JFrame implements MouseListener, BioScanListener {
 	@Override
 	public void BioScanSucccess(ScanEvent ev) {
 		// TODO BAD performance here, should only refresh changed rows
-		util.Logger.log("launcher: BioScanSucccess");
+		util.Logger.log(this, "BioScanSucccess");
 		showSession(activeSessionNode);
 	}
 

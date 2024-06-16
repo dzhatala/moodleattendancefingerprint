@@ -58,7 +58,7 @@ public class InstallCert {
 
 	public static void main(String[] args) throws Exception {
 		System.out.println("running mak yong");
-		String[] arg2 = new String[] {"cs.cepatpintar.biz.id" };
+		String[] arg2 = new String[] { "cs.cepatpintar.biz.id" };
 		main2(arg2);
 	}
 

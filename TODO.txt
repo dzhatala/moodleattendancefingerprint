@@ -1,5 +1,6 @@
-Wed Dec  7 08:16:17 KST 2022
 
+Wed Dec  7 08:16:17 KST 2022
+-200. i18n translate to Indonesian?
 -100: auto install cacert from firefox
 	somehow download automaticall cert LIKE/SAME as in firefox
 	and put it in database see install_cert.bat
@@ -12,14 +13,19 @@ Wed Dec  7 08:16:17 KST 2022
 	11/jan 2024 override 10 jan 2024
 	render_remark() must flexible .. ?
 -40. packager 
-	launch4J
+	launch4J, install cygwin espeak ?
 -30. in mysql auto create session for remote local mapping ...  
 -20. remote_id local_id auto mapping ...
 	must based on name (first, middle,last) because username is used for login, so it isn't transferred via
 	json/webservice. only user id is transferred
 	
 -10. create local Attendance/Session history (+cache statuses in mysql?) or JUST cache date?
-	connect ONCe to moodle , and cache structure to local backup ... 
+	JUST CACHE DATE ! in a date may be ther are many sessions/courses. so sorting of date is convinient naturally.
+		but optionally, nodes are also can be SORTED by courses or by classess ... 
+		-to cache date , just put timestamp(long) in Preferences. (too many bad performance) should be in SQL ?
+		
+	- next RELEASE: connect ONCe to moodle , and cache structure to local backup ... 
+	
 0. provide user a button (gui) for cancelling connection. Using asynchronous non blocking httpRespones ?
 	asynchronous 
 100. check if getToken() is called minimal in multithread environment

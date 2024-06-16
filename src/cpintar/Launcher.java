@@ -470,7 +470,8 @@ public class Launcher extends JFrame implements MouseListener, BioScanListener {
 	 */
 	private void showSession(DefaultMutableTreeNode sessionNode) {
 		// TODO Auto-generated method stub
-		if(sessionNode==null)return ;
+		if (sessionNode == null)
+			return;
 		Session sess = (Session) sessionNode.getUserObject();
 		// System.out.println("showing session: " + sess);
 

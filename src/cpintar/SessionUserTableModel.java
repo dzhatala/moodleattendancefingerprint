@@ -174,10 +174,13 @@ public class SessionUserTableModel extends DefaultTableModel {
 							AttendanceStudentInfo info = (AttendanceStudentInfo) o;
 							return AttendanceStatusInfo.ID2Description(
 									_detail.statuses, info.statusid);
-						} else {
-							return "id:" + _detail.users[row - 1].id
-									+ " not set ?";
 						}
+
+						return null;
+						/*
+						 * else { return "id:" + _detail.users[row - 1].id +
+						 * " not set ?"; }
+						 */
 					case 0: // local id
 						key = _detail.users[row - 1].id + "";
 						// System.out.println("local to get: #" + key + "#");
@@ -195,21 +198,22 @@ public class SessionUserTableModel extends DefaultTableModel {
 						// return _detail.users[row - 1].lastname;
 					case COL_FINGERDATE:
 
-						
-						
 						key = _detail.users[row - 1].id + "";
 						o = studentId2log.get(key);
 						AttendanceStudentInfo studinfo = (AttendanceStudentInfo) o;
-						if(studinfo!=null){
+						if (studinfo != null) {
 							return studinfo.remarks;
 						}
 						/*
-						String statusDesc=AttendanceStatusInfo.ID2Description(_detail.statuses, Integer.parseInt(studinfo.id));
-						if(statusDesc.equalsIgnoreCase("Absent")) return studinfo.remarks;
-						if(statusDesc.equalsIgnoreCase("Late")) return studinfo.remarks;
-						*/
-						
-						
+						 * String
+						 * statusDesc=AttendanceStatusInfo.ID2Description(
+						 * _detail.statuses, Integer.parseInt(studinfo.id));
+						 * if(statusDesc.equalsIgnoreCase("Absent")) return
+						 * studinfo.remarks;
+						 * if(statusDesc.equalsIgnoreCase("Late")) return
+						 * studinfo.remarks;
+						 */
+
 						key = _detail.users[row - 1].id + "";
 						// System.out.println("initvalues local to get: #" + key
 						// + "#");
@@ -422,7 +426,7 @@ public class SessionUserTableModel extends DefaultTableModel {
 	/**
 	 * for simple logging ?
 	 */
-	public String toString(){
-		return ""+this.getClass()+"@"+this.hashCode();
+	public String toString() {
+		return "" + this.getClass() + "@" + this.hashCode();
 	}
 }

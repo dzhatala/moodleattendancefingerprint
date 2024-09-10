@@ -1,5 +1,10 @@
 
 Wed Dec  7 08:16:17 KST 2022
+-1000: errors
+	- sessions:log update, remarks for excused NOT DETECTED/UPDATED.
+-300: java enroll - auto image, save
+	   can move image .. 
+	   
 -200. i18n translate to Indonesian?
 -100: auto install cacert from firefox
 	somehow download automaticall cert LIKE/SAME as in firefox
@@ -29,7 +34,8 @@ Wed Dec  7 08:16:17 KST 2022
 0. provide user a button (gui) for cancelling connection. Using asynchronous non blocking httpRespones ?
 	asynchronous 
 100. check if getToken() is called minimal in multithread environment
-200. token/network call() timeout ? in server or in app ?
+200. token/network_ws_functions call() timeout ? in server or in app ?
+	 timeout isn't checked yet. timeout is NOT DETECTED... 
 300. provide fingerprint devices support ... 
 400. check if application already launched. Skeleton only
 500. earlier 'before start'  time shadowing  correct time, 21/22/2022 pbo elsa nania agustina

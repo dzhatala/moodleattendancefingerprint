@@ -1,7 +1,9 @@
 package cpintar;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.GregorianCalendar;
 import java.util.Hashtable;
 
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -37,11 +39,14 @@ public class CourseTreeNode extends DefaultMutableTreeNode {
 	 */
 	@SuppressWarnings("unchecked")
 	private TreeNode addDateRoot(Date d) {
+		
+		Date s7start = normalized(d);//before put in hashtable must be normalized so 
+		
 		DefaultMutableTreeNode ret = null;
 		if (d != null) {
 			ret = getDate(d);
 			if (ret == null) {
-				ret = new DefaultMutableTreeNode(d);
+				ret = new DefaultMutableTreeNode(s7start);
 
 				// sorting by dates
 				Enumeration<DefaultMutableTreeNode> enums = dates.elements();
@@ -49,12 +54,12 @@ public class CourseTreeNode extends DefaultMutableTreeNode {
 
 				while (enums.hasMoreElements()) {
 					Date de = (Date) enums.nextElement().getUserObject();
-					if (d.compareTo(de) < 0) {
+					if (s7start.compareTo(de) < 0) {
 						index++;
 					}
 				}
 				insert(ret, index);
-				dates.put(d, ret);
+				dates.put(s7start, ret);
 			}
 		}
 
@@ -69,12 +74,12 @@ public class CourseTreeNode extends DefaultMutableTreeNode {
 	 * @return
 	 */
 	public DefaultMutableTreeNode addCourse(Course c, Date d) {
-		d.setHours(0);
-		d.setMinutes(0);
-		d.setSeconds(1);
+		DefaultMutableTreeNode dn=getDate(d);
 
-		DefaultMutableTreeNode dn = (DefaultMutableTreeNode) addDateRoot(d);
-
+		if(dn==null)
+		dn = (DefaultMutableTreeNode) addDateRoot(d);
+//		dn.removeAllChildren();
+		
 		DefaultMutableTreeNode nc = new DefaultMutableTreeNode(c);
 		courses.put(c.shortname, nc);
 		// System.out.println("adding course:" + nc);
@@ -118,7 +123,18 @@ public class CourseTreeNode extends DefaultMutableTreeNode {
 
 	public DefaultMutableTreeNode getDate(Date d) {
 		// TODO Auto-generated method stub
-		return (DefaultMutableTreeNode) dates.get(d);
+		
+		return (DefaultMutableTreeNode) dates.get(normalized(d));
+	}
+
+	private Date normalized(Date d) {
+		Calendar calStart = new GregorianCalendar();
+		calStart.setTime(d);
+		calStart.set(Calendar.HOUR_OF_DAY, 7);
+		calStart.set(Calendar.MINUTE, 0);
+		calStart.set(Calendar.SECOND, 0);
+		calStart.set(Calendar.MILLISECOND, 0);
+		return calStart.getTime();
 	}
 
 	public void deleteCachedDate(DefaultMutableTreeNode node) {

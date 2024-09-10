@@ -3,14 +3,11 @@ package cpintar;
 import java.awt.Color;
 import java.awt.Component;
 
+import javax.swing.JLabel;
 import javax.swing.JTable;
-import javax.swing.JTextArea;
 import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableModel;
 
 import moodle.FingerDatePair;
-
-import com.borland.dbswing.TableFastStringRenderer;
 
 //to render date time error 
 //public class UserSessionTableRenderer extends TableFastStringRenderer {
@@ -39,6 +36,7 @@ public class UserSessionTableRenderer extends DefaultTableCellRenderer {
 		// c.setWrapStyleWord(true);
 		// c.setFont(cold.getFont());
 		//
+
 		String status = tableModel.getValueAt(row,
 				SessionUserTableModel.COL_STATUS) + "";
 		// util.Logger.log(this,"status description: "+status);
@@ -48,12 +46,21 @@ public class UserSessionTableRenderer extends DefaultTableCellRenderer {
 			return c;
 		}
 
+		if (tableModel.getValueAt(row, SessionUserTableModel.COL_STATUS) == null) {
+			c.setForeground(Color.RED);
+			if (col == SessionUserTableModel.COL_STATUS) {
+				if (c instanceof JLabel) {
+					((JLabel) c).setText(i18n.LL.TR("NOT SET"));
+				}
+			}
+			return c;
+
+		}
 		if (status.trim().equalsIgnoreCase("Present")) {
 
 			c.setForeground(Color.BLACK);
 			return c;
 		}
-
 
 		if (this.tableModel.getStatusInfos() == null)
 			c.setForeground(Color.RED);
@@ -80,8 +87,8 @@ public class UserSessionTableRenderer extends DefaultTableCellRenderer {
 
 		return c;
 	}
-	
-	public String toString(){
+
+	public String toString() {
 		return this.getClass().toString();
 	}
 

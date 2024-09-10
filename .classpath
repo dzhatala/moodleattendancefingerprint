@@ -28,5 +28,7 @@
 	<classpathentry kind="lib" path="libs/freetts-1.2.2-bin/freetts-1.2/lib/mbrola_zoel.jar"/>
 	<classpathentry kind="lib" path="libs/commons-lang3-3.14.0-bin/commons-lang3-3.14.0/commons-lang3-3.14.0.jar"/>
 	<classpathentry kind="lib" path="libs/junit-4.11.jar"/>
+	<classpathentry kind="lib" path="libs/ormlite/ormlite-core-6.1.jar"/>
+	<classpathentry kind="lib" path="libs/ormlite/ormlite-jdbc-6.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

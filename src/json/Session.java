@@ -1,12 +1,17 @@
 package json;
 
+import com.j256.ormlite.dao.RuntimeExceptionDao;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import moodle.Utils;
+import com.j256.ormlite.field.DatabaseField;
+
 
 public class Session {
+	@DatabaseField
 	public long id;
+	@DatabaseField
 	public int attendanceid;
 	public int groupid;
 	public long sessdate; // unix timestamp in seconds, for moodle server time ..
@@ -20,6 +25,9 @@ public class Session {
 	static SimpleDateFormat dateFormat = new SimpleDateFormat(
 			"dd/MM/yyyy HH:mm");
 
+	public Session(){
+		
+	}
 	public String toString() {
 		// String ret = "id: " + id;
 		String ret = "";

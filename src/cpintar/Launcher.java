@@ -134,7 +134,7 @@ public class Launcher extends JFrame implements MouseListener, BioScanListener {
 					TimeZone.setDefault(zone);
 					dateFormatZone.setTimeZone(zone);
 					Launcher frame = new Launcher();
-					frame.loadCachedDates();
+					// frame.loadCachedDates();
 					frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 					JScrollPane scP = frame.getScrollPane();
 					frame.getScrollPane().setViewportView(frame.courseTree);
@@ -1144,14 +1144,17 @@ public class Launcher extends JFrame implements MouseListener, BioScanListener {
 		// SessionUserTableModel.COL_STATUS));
 		for (int i = 0; i < rn; i++) {
 			Object status = tableModel.getValueAt(i,
-					SessionUserTableModel.COL_STATUS).toString();
+					SessionUserTableModel.COL_STATUS);
+			if (status != null)
+				status = status.toString();
 			Object tmp = tableModel.getValueAt(i,
 					SessionUserTableModel.COL_FINGERDATE);
 			// System.out.println("r " + i + " fingerdate:" + tmp + ", class:"
 			// + tmp.getClass());
-			if (!status.toString().equalsIgnoreCase("Present")) {
+			if (status == null
+					|| !status.toString().equalsIgnoreCase("Present")) {
 				if (!isAll) {
-					System.out.println("autoSpr isAll = " + isAll);
+					// System.out.println("autoSpr isAll = " + isAll);
 					if (tmp instanceof FingerDatePair) { // TODO
 															// not
 															// taken
@@ -1213,6 +1216,7 @@ public class Launcher extends JFrame implements MouseListener, BioScanListener {
 				LL.TR("Get Data From server?"), LL.TR("Confirm"),
 				JOptionPane.YES_NO_OPTION);
 
+		// /////root.removeAllChildren();//
 		if (dialogButton == JOptionPane.YES_OPTION) {
 			if (tableModel != null)
 				// if (tableModel.getDataVector() != null)
@@ -1272,8 +1276,8 @@ public class Launcher extends JFrame implements MouseListener, BioScanListener {
 						if (dialogButton != JOptionPane.YES_OPTION) {
 							return;
 						}
-
 						dn.removeAllChildren();
+
 					}
 
 					restConnector.setService(url.serviceName);
@@ -1310,7 +1314,6 @@ public class Launcher extends JFrame implements MouseListener, BioScanListener {
 					Course[] courses = ch.course;
 					if (courses == null)
 						return;
-					// System.out.print("course ret: " + courses.length);
 
 					for (int i = 0; i < courses.length; i++) {
 						DefaultMutableTreeNode courseNode = root.addCourse(

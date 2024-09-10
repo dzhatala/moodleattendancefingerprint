@@ -44,11 +44,18 @@ import java.net.InetSocketAddress;
 
 import javax.net.ssl.*;
 
+import moodle.RestReturn;
+
+import com.ning.http.client.AsyncHttpClient;
+import com.ning.http.client.Response;
+import com.ning.http.client.AsyncHttpClient.BoundRequestBuilder;
+
 import java.io.*;
 import java.security.KeyStore;
 import java.security.MessageDigest;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.concurrent.Future;
 
 /**
  * Class used to add the server's certificate to the KeyStore with your trusted
@@ -57,9 +64,14 @@ import java.security.cert.X509Certificate;
 public class InstallCert {
 
 	public static void main(String[] args) throws Exception {
-		System.out.println("running mak yong");
+		System.out.println("running mak yong install cert");
 		String[] arg2 = new String[] { "cs.cepatpintar.biz.id" };
-		main2(arg2);
+//		main2(arg2);
+//		testHTTPS01("https://cs.cepatpintar.biz.id");
+//		testHTTPS01("https://buku.cepatpintar.biz.id/info.php");
+		String url="https://cs.cepatpintar.biz.id/";
+		if(args.length>0) url = args[0];
+		testHTTPS01(url);
 	}
 
 	public static void main2(String[] args) throws Exception {
@@ -276,6 +288,75 @@ public class InstallCert {
 			this.chain = chain;
 			tm.checkServerTrusted(chain, authType);
 		}
+	}
+
+	public static final int HTTP_CHECK_INTERVAL = 1000;// check in miliseconds
+	public static int HTPP_TIMEOUT = 5000; // timeout in miliseconds
+
+	public static RestReturn testHTTPS01(String moodleURL)
+			throws Exception {
+
+		String responseBody = null;
+
+		System.out.println(" testHTTPS01 URL : " + moodleURL);
+		// System.out.println("REST url : " + serverurl);
+
+		AsyncHttpClient asyncHttpClient = new AsyncHttpClient();
+		BoundRequestBuilder post = asyncHttpClient.prepareGet(moodleURL);
+
+
+		RestReturn myret = null;
+		HTPP_TIMEOUT=10000;
+		try {
+
+			Future<Response> f = post.execute();
+			if (f == null) {
+				System.out.println("st wrong f is null");
+				return null;
+			}
+			long wait = 0;
+			while (!f.isCancelled() && !f.isDone()) {
+				// System.out.println(f.isCancelled() +" " +f.isDone());
+				System.out.println("Not done " + wait + " ms");
+				Thread.currentThread().sleep(HTTP_CHECK_INTERVAL);
+				wait += HTTP_CHECK_INTERVAL;
+				if (wait >= HTPP_TIMEOUT) {
+					f.cancel(true);
+					System.out.println("cancel at " + wait + " ms");
+					return null;
+				}
+				System.out.flush();
+
+			}
+
+			System.out.println("after while " + f.isCancelled() + " "
+					+ f.isDone());
+			if (f.isCancelled()) {
+				System.out.println("cancelled returning null " + f.toString());
+				return null;
+			}
+			Response r = f.get();
+
+			// HttpEntity entity = response.getEntity();
+			myret = new RestReturn();
+			// myret.response = EntityUtils.toString(entity, "UTF-8");
+			System.out.println( r.getResponseBody("UTF-8"));
+			// response.close();
+			System.out.println();
+			return myret;
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			// post.releaseConnection();
+		}
+
+//		if (myret != null) {
+//			if (myret.response.toLowerCase().indexOf("error") >= 0)
+//				throw new Exception("JSON REPLY contain ERROR");
+//		}
+
+		return null;
+
 	}
 
 }

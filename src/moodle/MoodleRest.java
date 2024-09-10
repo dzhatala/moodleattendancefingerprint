@@ -2,10 +2,8 @@ package moodle;
 
 import java.io.IOException;
 import java.net.ProtocolException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -18,11 +16,7 @@ import json.SessionDetail;
 import json.Token;
 
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpException;
-import org.apache.http.HttpHeaders;
 import org.apache.http.NameValuePair;
-//import org.apache.commons.httpclient.HttpClient;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -822,11 +816,17 @@ public class MoodleRest {
 		// restConnector.setUsername("007");// TODO ask user input
 		// restConnector.setPassword("007"); // TODO ask user input
 
+		if (args.length > 1) {
+			AccountConfig.setUsername(args[0]);
+			AccountConfig.setPassword(args[1]);
+		}
 		restConnector.setUsername(AccountConfig.getUsername());// TODO ask user
 																// input
 		restConnector.setPassword(AccountConfig.getPassword()); // TODO ask user
 																// input
 
+		System.out.println(AccountConfig.getUsername() + " "
+				+ AccountConfig.getPassword());
 		Token t = restConnector.asyncGetToken(null, null, "fp_cepatpintar");
 
 		if (restConnector.lastToken == null) {

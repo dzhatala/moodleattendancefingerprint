@@ -26,5 +26,3 @@ Build id: 20130919-0819
 (c) Copyright Eclipse contributors and others 2000, 2013.  All rights reserved.
 Visit http://eclipse.org/
 
-This product includes software developed by the
-Apache Software Foundation http://apache.org/

@@ -438,7 +438,7 @@ public class Launcher extends JFrame implements MouseListener, BioScanListener {
 	StatusCellEditor edtr = null;
 	private JComboBox courseDate;
 	private ConnectionDescriptor mysqlDescriptor = new ConnectionDescriptor(
-			"jdbc:mysql://localhost:3306/absensi", "root", "", false,
+			"jdbc:mysql://localhost:3306/"+"absensi_2024", "root", "", false,
 			"com.mysql.jdbc.Driver"); // TODO profile GUI editor
 	private JButton btnAutoSetPresent;
 	private JButton btnSyncChangeMoodle;

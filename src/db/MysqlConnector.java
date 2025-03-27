@@ -40,11 +40,13 @@ public class MysqlConnector {
 	/**
 	 * @wbp.nonvisual location=69,409
 	 */
+	private String password="";
+	private String dbname="absensi2024";
+	private String username="root";
+	private String hostname="localhost";
 	private ConnectionDescriptor mySQLDescriptor = new ConnectionDescriptor(
-			"jdbc:mysql://localhost:3306/absensi", "root", "", false,
+			"jdbc:mysql://"+hostname+":3306/"+dbname, username, password, false,
 			"com.mysql.jdbc.Driver"); // TODO fix , get from Preferences
-	private String hostname;
-	private String password;
 	QueryDataSet qds = new QueryDataSet();
 
 	public String getPassword() {
@@ -75,8 +77,6 @@ public class MysqlConnector {
 		return database;
 	}
 
-	private String dbname;
-	private String username;
 
 	public MysqlConnector(String hostname, String username, String password,
 			String dbname) {
@@ -509,7 +509,7 @@ public class MysqlConnector {
 				+ qds.rowCount());
 
 		Connection con = DriverManager.getConnection(
-				"jdbc:mysql://localhost:3306/" + "absensi", "root", "");
+				"jdbc:mysql://localhost:3306/" + dbname, "root", "");
 		// here sonoo is database name, root is username and password
 		Statement stmt = con.createStatement();
 		fp_q = "delete from DateCache where UNIX_TIMESTAMP(retrievedate)="

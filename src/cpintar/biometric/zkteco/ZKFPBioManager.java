@@ -38,6 +38,7 @@ import javax.swing.JFrame;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollBar;
 import javax.swing.JTextArea;
+import javax.swing.SwingWorker;
 
 import com.borland.dx.dataset.DataSetException;
 import com.borland.dx.sql.dataset.ConnectionDescriptor;
@@ -143,11 +144,13 @@ public class ZKFPBioManager extends JDialog implements BioScanner {
 	private JScrollPane scrollPane;
 	private MysqlConnector mySQLConn = null;
 	protected String[] ZKFP_C_basedirs = new String[] {
-			"Z:\\remove_programs\\yogacopy\\javaws\\hatala",
-			"Z:\\remove_programs\\yogacopy\\javaws\\ang_2022",
+	// "Z:\\remove_programs\\yogacopy\\javaws\\hatala",
+	// "Z:\\remove_programs\\yogacopy\\javaws\\ang_2022_2021",
 	// "Z:\\remove_programs\\yogacopy\\javaws\\ang_2021",
-
 	// based
+
+	"G://rsync//poltek//24_25//zktecos//Release"
+
 	};
 	// protected String ZKFP_C_basedir =
 	// "Z:\\remove_programs\\yogacopy\\javaws\\2024";// based
@@ -155,7 +158,9 @@ public class ZKFPBioManager extends JDialog implements BioScanner {
 	// of
 	// C
 	// version
-	private String IMAGE_DIR = "Z:\\remove_programs\\yogacopy\\javaws\\images";
+	// private String IMAGE_DIR =
+	// "Z:\\remove_programs\\yogacopy\\javaws\\images";
+	private String IMAGE_DIR = "G://rsync//rsync_2025_21_02//zkteco_images";
 
 	private JTextArea textUser;
 
@@ -503,7 +508,7 @@ public class ZKFPBioManager extends JDialog implements BioScanner {
 			}
 			loadTPL10Directory(dir);
 		}
-		log("Total load :" + iFid + " Templates");
+		log("Total load :" + (iFid - 1) + " Templates");
 
 	}
 
@@ -1160,7 +1165,7 @@ public class ZKFPBioManager extends JDialog implements BioScanner {
 		try {
 			final MoodleUser found = mySQLConn.get_mdl_user(FPID_C);
 			if (found == null && FPID_C > 0) {
-				ttsSpeak( " TIDAK di  Basis Data. " + FPID_C );
+				ttsSpeak(" TIDAK di  Basis Data. " + FPID_C);
 				log("FPID_C:" + FPID_C + " not in mySQL\n");
 				// textUser.setText("FPID " + FPID_C + " NOT in MySQL");
 				return ret;
@@ -1372,14 +1377,26 @@ public class ZKFPBioManager extends JDialog implements BioScanner {
 		log(o.toString());
 	}
 
-	private void log(String str) {
+	private void log(final String str) {
 		// TODO Auto-generated method stub
 
 		// Logger.log(str);
+		class AnswerWorker extends SwingWorker<Integer, Integer> {
 
-		textArea.append(str);
-		JScrollBar vertical = scrollPane.getVerticalScrollBar();
-		vertical.setValue(vertical.getMaximum());
+			@Override
+			protected Integer doInBackground() throws Exception {
+				// TODO Auto-generated method stub
+				textArea.append(str);
+				JScrollBar vertical = scrollPane.getVerticalScrollBar();
+				vertical.setValue(vertical.getMaximum());
+				util.Logger.log(this, str);
+				return null;
+			}
+
+		}
+		;
+
+		new AnswerWorker().execute();
 
 	}
 
@@ -1433,8 +1450,9 @@ public class ZKFPBioManager extends JDialog implements BioScanner {
 		// bm.extractFPIDfromFilename("TPL9_736.tpl");
 		MysqlConnector mc = new MysqlConnector();
 
+		String dbname = "absensi_2024";
 		ConnectionDescriptor desc = new ConnectionDescriptor(
-				"jdbc:mysql://localhost:3306/absensi", "root", "", false,
+				"jdbc:mysql://localhost:3306/" + dbname, "root", "", false,
 				"com.mysql.jdbc.Driver"); // TODO profile GUI editor
 		mc.setMySQLDescriptor(desc);
 		bm.setMySQLConnector(mc);

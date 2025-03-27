@@ -5,7 +5,8 @@ import java.io.IOException;
 import util.Logger;
 
 public final class TTSReader {
-	String cygwindir = "z:\\rps\\cygwin64";
+	//String cygwindir = "z:\\rps\\cygwin64";
+	String cygwindir = "c:\\cygwin64";
 
 	public Process espeakRead(String text) throws Exception {
 
@@ -35,8 +36,8 @@ public final class TTSReader {
 	public static void main(String args[]) throws Exception {
 		TTSReader r = new TTSReader();
 
-		r.espeakRead("  Saya makan nasi");
-		r.espeakRead(" dia cuma minum air. ");
+//		r.espeakRead("  Saya makan nasi");
+//		r.espeakRead(" dia cuma minum air. ");
 		r.espeakRead("mereka habiskan segalanya");
 	}
 

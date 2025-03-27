@@ -10,12 +10,13 @@ import java.io.PrintWriter;
 import util.Logger;
 
 public final class USBLister {
-	String cygwindir = "z:\\rps\\cygwin64";
+//	String cygwindir = "z:\\rps\\cygwin64";
+	String cygwindir = "c:\\cygwin64";
 
 	public Process listUSB() throws Exception {
 
 //		String[] cmd = new String[] { cygwindir + "\\bin\\lsusb", "-v" };
-		String[] cmd = new String[] { cygwindir + "\\bin\\lsusb" };
+		String[] cmd = new String[] { cygwindir + "\\bin\\lsusb" };//install usbutils in cygwin
 		// Logger.log(cmd);
 
 		long startTime = System.nanoTime();

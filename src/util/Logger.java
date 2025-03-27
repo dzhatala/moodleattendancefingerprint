@@ -1,10 +1,12 @@
 package util;
 
+import java.util.Date;
+
 public final class Logger {
 
-	public static void log(String str) {
+	public static void log(String str) { 
 		// TODO Auto-generated method stub
-		System.out.println(Logger.class+":"+str);
+		System.out.println(new Date()+": "+ Logger.class+":"+str);
 	}
 
 	public static void log(Object str) {

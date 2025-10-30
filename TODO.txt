@@ -1,6 +1,5 @@
-
 Wed Dec  7 08:16:17 KST 2022
--1500 : config database
+-1500 : config database, absensi_2024 in cpintar.Laucnher is HARD coded cannot be switched to to other db
 -1000: errors
 	- sessions:log update, remarks for excused NOT DETECTED/UPDATED.
 -300: java enroll - auto image, save

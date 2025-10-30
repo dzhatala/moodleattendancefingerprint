@@ -1,0 +1,30 @@
+INSTALL.TXT
+
+java-kalesang.jar (pc)
+	1. -cgwin64/bin/lsusb (usbutils)
+	2. zkteco driver install
+	3. java.exe exist
+	4. mysql install
+		-create database 'absensi'
+		execute sqls/absensi.sql
+	5. set master TPL10 directories
+		each dir must contain sub dir 'master' and 'download'
+	6. set image output directory
+	7. install_cert_java.bat
+	8. java cpintar.Settings
+		change username and password
+	9. zkteco library
+		libzkfp dir
+
+REGISTER:
+
+	
+voice/sound:
+	cygwin espeak ?
+	
+	
+moodle (web hosting)
+	- plugin attendance
+		-create course (separate groups)
+		-cretea session (separate groups)
+		

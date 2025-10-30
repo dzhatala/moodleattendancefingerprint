@@ -800,6 +800,7 @@ public class ZKFPDemo001 extends JFrame{
 		}
 		
 		void test01(){
+			System.out.println("test01");
 			open();
 			byte[] paramValue1 = new byte[4];
 //			FingerprintSensorEx.Int2ByteArray(1, paramValue1);
@@ -820,7 +821,8 @@ public class ZKFPDemo001 extends JFrame{
 		
 		
 		public static void main(String[] args) {
-			new ZKFPDemo001().launchFrame();
+			new ZKFPDemo001().test01();
+//			new ZKFPDemo001().launchFrame();
 			
 //			ZKFPDemo001 dm=new ZKFPDemo001();
 //			dm.open();			

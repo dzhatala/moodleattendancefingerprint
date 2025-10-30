@@ -41,7 +41,7 @@ public class MysqlConnector {
 	 * @wbp.nonvisual location=69,409
 	 */
 	private String password="";
-	private String dbname="absensi2024";
+	private String dbname="absensi_2024";
 	private String username="root";
 	private String hostname="localhost";
 	private ConnectionDescriptor mySQLDescriptor = new ConnectionDescriptor(
@@ -115,6 +115,8 @@ public class MysqlConnector {
 	 *            mdl_user primary key
 	 */
 	public RemotePair[] get_remote_pairs(long[] remotes) throws Exception {
+		
+		if(remotes.length<=0)throw new Exception ("Can't get pairs from empty students");
 
 		database.setConnection(mySQLDescriptor);
 		database.openConnection();
@@ -135,7 +137,7 @@ public class MysqlConnector {
 		}
 		fp_q += ")";
 
-		// System.out.println("qds q is:" + fp_q);
+		 System.out.println("qds q is:" + fp_q);
 		qds.setQuery(new com.borland.dx.sql.dataset.QueryDescriptor(database,
 				fp_q, null, true, Load.ALL));
 		qds.setReadOnly(true);

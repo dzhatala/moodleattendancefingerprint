@@ -2,7 +2,6 @@ INSTALL.TXT
 
 java-kalesang.jar (pc)
 	1. -cgwin64/bin/lsusb (usbutils)
-	2. zkteco driver install
 	3. java.exe exist
 	4. mysql install
 		-create database 'absensi'
@@ -13,10 +12,11 @@ java-kalesang.jar (pc)
 	7. install_cert_java.bat
 	8. java cpintar.Settings
 		change username and password
-	9. zkteco library
+	2. zkteco driver install
+	   zkteco library 5.3.0.33 (with java library)
 		libzkfp dir
 
-REGISTER:
+REGISTER https permissions:
 
 	
 voice/sound:
